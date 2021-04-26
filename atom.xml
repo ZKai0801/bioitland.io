@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>岛</title>
+  <icon>https://www.gravatar.com/avatar/55e28a2613bdb16dab441fe38544dc33</icon>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://bioitland.com/"/>
+  <updated>2021-04-26T03:18:40.472Z</updated>
+  <id>http://bioitland.com/</id>
+  
+  <author>
+    <name>Kai</name>
+    <email>zhentian.kai@outlook.com</email>
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从AUC到DCA</title>
+    <link href="http://bioitland.com/2021/04/25/DCA/"/>
+    <id>http://bioitland.com/2021/04/25/DCA/</id>
+    <published>2021-04-24T16:00:00.000Z</published>
+    <updated>2021-04-26T03:18:40.472Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;DCA全名 Decision Curve Analysis，即决策曲线分析法，在 2006 年由 MSKCC 的 Vickers 和 Elkin 首次提出 &lt;sup&gt;1, 2,
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Statistics" scheme="http://bioitland.com/categories/Statistics/"/>
+    
+    
+      <category term="DCA" scheme="http://bioitland.com/tags/DCA/"/>
+    
+      <category term="ROC" scheme="http://bioitland.com/tags/ROC/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>癌症突变解读协会 -- VICC</title>
+    <link href="http://bioitland.com/2020/05/28/vicc/"/>
+    <id>http://bioitland.com/2020/05/28/vicc/</id>
+    <published>2020-05-27T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天要介绍的是Variant Interpretation for Cancer Consortium (VICC) 癌症突变解读协会，这一协会隶属 Global Alliance for Genomic and Health 组织之下，旨在促进肿瘤界中的突变的解读。虽然 AMP/ASCO/CAP 在2017年就发布了这方面的指南，但细读之，就能发现里面留下了很多待解决的问题。而 VICC 项目的发起，就是为了解决这些问题，因此 VICC 的原文非常值得一读，文献地址请见文末&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Cancer" scheme="http://bioitland.com/categories/Cancer/"/>
+    
+      <category term="Bioinformatics" scheme="http://bioitland.com/categories/Cancer/Bioinformatics/"/>
+    
+    
+      <category term="Variant Classification" scheme="http://bioitland.com/tags/Variant-Classification/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>爬虫工具推荐 -- ParseHub</title>
+    <link href="http://bioitland.com/2020/05/25/recomm_parsehub/"/>
+    <id>http://bioitland.com/2020/05/25/recomm_parsehub/</id>
+    <published>2020-05-24T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;爬虫这玩意虽说入门简单，但写起来着实麻烦，更可恶的是在生信中用到的机会不多，基本脚本都是一次性的，用完一次后就再也用不上，每次再要用的时候又得回去查各个包的语法，特别不方便。终于，就在今天，我找到了一款可以一劳永逸的爬虫软件，
+        
+      
+    
+    </summary>
+    
+    
+      <category term="IT" scheme="http://bioitland.com/categories/IT/"/>
+    
+    
+      <category term="爬虫" scheme="http://bioitland.com/tags/%E7%88%AC%E8%99%AB/"/>
+    
+      <category term="工具推荐" scheme="http://bioitland.com/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Phasing</title>
+    <link href="http://bioitland.com/2020/05/18/phasing/"/>
+    <id>http://bioitland.com/2020/05/18/phasing/</id>
+    <published>2020-05-17T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这一篇拖了挺久，一来是五一的时候出去玩了一趟，就偷了会懒，结果五一回来一直忙于工作，就又拖了一周，等我缓过神来才惊觉已经过去了半个多月，因此赶忙过来补上一篇。&lt;/p&gt;
+&lt;p&gt;上文说到，phasing 的根本目的，是将测序所得的碱基序列，重新正确的划分至他们本身的起源。而这一方法，在绝大数语境之中，指的便是将序列归为父亲或者母亲的染色体之中。目前大多数 phasing 的方法都是基于这一目的展开的，在肿瘤之中并不适用，由于肿瘤异质性的存在，测得的碱基序列可被归到不同的亚克隆之中，这使得传统 phasing 方法无法被使用。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Bioinformatics" scheme="http://bioitland.com/categories/Bioinformatics/"/>
+    
+    
+      <category term="Phasing" scheme="http://bioitland.com/tags/Phasing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Multi-nucleotide variants</title>
+    <link href="http://bioitland.com/2020/04/28/Multi-nucleotide-variants/"/>
+    <id>http://bioitland.com/2020/04/28/Multi-nucleotide-variants/</id>
+    <published>2020-04-27T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;之前写过一篇关于MNV的文章，但感觉写的逻辑混乱，故推翻重写一篇&lt;/p&gt;
+&lt;p&gt;MNV (multi-nucleotide variants) 即多个碱基发生变化的突变，是有两个甚至多个 SNVs / InDels 合并而成，至于为何不将这些 SNVs / InDels 分别对待，则由于它在临床上、生物学上具有特殊的意义，因此特意归为一类突变。&lt;/p&gt;
+&lt;p&gt;至今为止，关于MNV并没有一个准确的定义，虽然大家都明确同一单倍型上的突变需要被合并，但无人指出具体&lt;strong&gt;多近&lt;/strong&gt;的突变应该被合并。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Bioinformatics" scheme="http://bioitland.com/categories/Bioinformatics/"/>
+    
+    
+      <category term="Phasing" scheme="http://bioitland.com/tags/Phasing/"/>
+    
+      <category term="MNV" scheme="http://bioitland.com/tags/MNV/"/>
+    
+      <category term="Haplotype" scheme="http://bioitland.com/tags/Haplotype/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>肿瘤的分级、分期、分型</title>
+    <link href="http://bioitland.com/2020/04/24/tumour_stages_grades/"/>
+    <id>http://bioitland.com/2020/04/24/tumour_stages_grades/</id>
+    <published>2020-04-23T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这篇文章一开始只打算写个TNM分期的介绍，但后来学习到临床上的各种划分方式，索性就仔细研究了一下，一起记下来。&lt;/p&gt;
+&lt;p&gt;肿瘤之中有分级、分期与分型之说，而分级 (grading) 和分期 (staging)  这两个概念常常被放在一起讨论，初次遇见往往会被混淆。首先它们均是对恶性肿瘤 (malignant tumour) 的描述方式，分级 grading 是一种描述肿瘤恶性程度的指标，也就是肿瘤的分化程度；而分期 staging 则是描述恶性肿瘤的生长范围和扩散程度，在很大的程度上可以用于指导治疗方式和预后的评估。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Cancer" scheme="http://bioitland.com/categories/Cancer/"/>
+    
+    
+      <category term="TNM stages" scheme="http://bioitland.com/tags/TNM-stages/"/>
+    
+      <category term="tumour grading" scheme="http://bioitland.com/tags/tumour-grading/"/>
+    
+      <category term="WHO tumour classification" scheme="http://bioitland.com/tags/WHO-tumour-classification/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>肿瘤突变分类 -- VIC</title>
+    <link href="http://bioitland.com/2020/04/10/vic/"/>
+    <id>http://bioitland.com/2020/04/10/vic/</id>
+    <published>2020-04-09T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;虽然&lt;strong&gt;肿瘤突变指南&lt;/strong&gt;早在2017年1月就由AMP，ASCO和CAP联名发布，但过去的三年里，实际上采用次标准的公司并不多，只有最近几个月才采取此标准的呼声才逐渐强烈。&lt;/p&gt;
+&lt;p&gt;抛开大家的采用的意愿不谈，个人认为此标准难以统一的原因是，指南中存在很多模糊、甚至相冲突的概念，很容易造成大家的困惑。例如指南中提出的10个判断标准，并没有说明具体的划分界限，以及各个标准所占的比重为多少。这样在实际操作过程中，就很容易会产生分歧。&lt;/p&gt;
+&lt;p&gt;而前两日我忽然发现王凯团队开发的一款名为 VIC (Variant Interpretation for Cancer) 的肿瘤突变分类软件，在指南的基础上融合了 Global Alliance for Genomics and Health (GA4GH) 组织中提及的肿瘤评判资料 ，对上述提到的模糊区域进行明确的定义及填充，能很大程度上实现突变分类自动化这一过程。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Bioinformatics" scheme="http://bioitland.com/categories/Bioinformatics/"/>
+    
+      <category term="Cancer" scheme="http://bioitland.com/categories/Bioinformatics/Cancer/"/>
+    
+    
+      <category term="Variant Classification" scheme="http://bioitland.com/tags/Variant-Classification/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>生信软件安装</title>
+    <link href="http://bioitland.com/2019/12/04/biosoftware/"/>
+    <id>http://bioitland.com/2019/12/04/biosoftware/</id>
+    <published>2019-12-03T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;生信中很多软件安装起来都相当麻烦，这里推荐两种途径来解决这一问题：bioconda 以及 docker&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="IT" scheme="http://bioitland.com/categories/IT/"/>
+    
+    
+      <category term="Conda" scheme="http://bioitland.com/tags/Conda/"/>
+    
+      <category term="Docker" scheme="http://bioitland.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ssh快连+免密</title>
+    <link href="http://bioitland.com/2019/06/10/ssh_tips/"/>
+    <id>http://bioitland.com/2019/06/10/ssh_tips/</id>
+    <published>2019-06-09T16:00:00.000Z</published>
+    <updated>2021-02-07T01:30:02.580Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;由于工作需要，我往往会在多台服务器上反复切换，将文件从一个服务器传到另一个服务器上，因此会非常频繁的用到 &lt;code&gt;scp ssh&lt;/code&gt;  这些命令，下面这两个功能能很大程度的省去其中的一些麻烦&lt;/p&gt;
+&lt;h2 id=&quot;简化SSH&quot;&gt;&lt;a
+        
+      
+    
+    </summary>
+    
+    
+      <category term="IT" scheme="http://bioitland.com/categories/IT/"/>
+    
+    
+      <category term="ssh" scheme="http://bioitland.com/tags/ssh/"/>
+    
+  </entry>
+  
+</feed>

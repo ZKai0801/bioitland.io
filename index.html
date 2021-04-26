@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" >
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+     岛
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="岛" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content on">
+      
+<section class="cover">
+    
+  <div class="cover-frame">
+    <div class="bg-box">
+      <img src="/images/cover1.jpg" alt="image frame" />
+    </div>
+    <div class="cover-inner text-center text-white">
+      <h1><a href="/">岛</a></h1>
+      <div id="subtitle-box">
+        
+        <span id="subtitle"></span>
+        
+      </div>
+      <div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="cover-learn-more">
+    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
+  </div>
+</section>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
+
+<div id="main">
+  <section class="outer">
+  <article class="articles">
+    
+    
+    
+    
+    <article id="post-DCA" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/04/25/DCA/"
+    >从AUC到DCA</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/04/25/DCA/" class="article-date">
+  <time datetime="2021-04-24T16:00:00.000Z" itemprop="datePublished">2021-04-25</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Statistics/">Statistics</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>DCA全名 Decision Curve Analysis，即决策曲线分析法，在 2006 年由 MSKCC 的 Vickers 和 Elkin 首次提出 <sup>1, 2, 3</sup>，用于评估临床中的诊断模型、预后模型等。相较于在二战时期被发明的ROC曲线，DCA还非常年轻，但已在临床模型评估中展现出其独有的优势。因为此分析法并不重点关注于灵敏度及特异性，而是从患者的净收益情况、及其自身意愿的角度来评估模型的优劣。</p>
+<p>在本文中，我将从二元分类问题入手，系统介绍ROC曲线以及DCA曲线</p>
+<h1 id="二元分类问题"><a href="#二元分类问题" class="headerlink" title="二元分类问题"></a>二元分类问题</h1><p>无论是ROC曲线还是DCA曲线，都是用于评估二元分类 (binary classification) 模型的一种分析方法。所谓二元分类问题，就是结局仅有两种情况的问题，在临床之中尤为常见。例如，诊断一位患者是否得了某种疾病（结局仅可能为：“有” 或者 “没有”）。</p>
+<p>对于评估一个模型是否能准确的进行分类来说，常见有如下几个指标：</p>
+<ol>
+<li><p>灵敏度  TPR</p>
+<p>又被称为召回率，英文：Sensitivity、Recall Rate、True Positive Rate</p>
+<p>即 实际为阳性中检出阳性 的占比。</p>
+<p>假设我们在评估一种癌症的检测方法，则该指标评估的是 该检测方法对患者的检出能力水平。</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>特异性 TNR</p>
+<p>英文 Specificity、True Negative Rate </p>
+<p>即 实际为阴性中检出阴性 的占比。</p>
+<p>同样假设我们在评估一种癌症的检测方法，则该指标评估的是 该检测方法对健康人群的排除能力水平。</p>
+</li>
+</ol>
+<ol start="3">
+<li><p>精确度 PPV</p>
+<p>又称为阳性预测值，英文 Precision、Positive Predictive Value</p>
+<p>所指为在 所有检出为阳性之中真正为阳性 的占比</p>
+<p>同样假设下，该指标评估的是 所有检测为阳性的人群中，真正患癌的人数占比</p>
+<p>此值低，则意味着假阳性的人数多，则会对健康受试者造成不必要的恐慌，以及浪费之后的检测、治疗。</p>
+</li>
+</ol>
+<ol start="4">
+<li><p>阴性预测值 NPV</p>
+<p>英文 Negative Predictive Value</p>
+<p>所指为在 所有检测为阴性之中真正为阴性 的占比</p>
+<p>同样假设下，该指标评估的是 所有检测为阴性的人群中，真正健康人的人数占比</p>
+<p>此值低，则意味着假阴性的人数多，这些被误诊为健康的癌症患者则会被耽误治疗、甚至错过最佳治疗时机。</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>F1 score</p>
+<p>不知道中文名叫啥，又称为 F score 或 F measure</p>
+<p>其定义为 灵敏度 和 精确度 的调和平均数，公式如下：</p>
+<p>F1-score = 2 / ( (1/ TPR ) + (1 / PPV) )</p>
+<p>该值在 0 ~ 1 范围内浮动，1 则表示该值具有完美的灵敏度和精确度；0 则意味着 灵敏度 或 精确度 中一值为 0</p>
+</li>
+</ol>
+<p>上述五类指标在临床中最为常见，建议熟读并背诵 :) </p>
+<p>详情见下图：</p>
+<p><img src="https://raw.githubusercontent.com/ZKai0801/bioitland.io/master/imgs/dca_bc.png" alt="binary_classification"></p>
+<h1 id="ROC曲线"><a href="#ROC曲线" class="headerlink" title="ROC曲线"></a>ROC曲线</h1><p>ROC 全名 Receiver operating characteristics，之所以有这么个古怪的名字，是因为它是在二战时期被发明，一开始是用作评估雷达的信号接受能力。</p>
+<p>这一分析方法非常简单，是通过对模型设置不同的阈值来计算出其对应的 TPR 以及 FPR。通过上图可知，TPR 便是灵敏度（即收益）；FPR 便是 1 - 特异性（即代价）。如此一来，每一个模型便都能计算出其对应的一条 ROC 曲线。如下图，曲线越接近图中的左上角，则意味着模型越准确；反之，如果曲线越接近图中的对角线，则意味着模型对结果的预测越随机。</p>
+<p>如何更为直观的表达模型的好坏呢？答案便是使用 曲线下面积 – AUC面积（Area Under Curve）。AUC 这一数值取值在 0.5 - 1 之间。0.5 所对应的便是ROC曲线与对角线重叠的情况，表明模型对结果的预测完全随机；AUC = 1，则是面积最大，意味着模型能完全精准的预测出结果的情况。</p>
+<p><img src="https://glassboxmedicine.files.wordpress.com/2019/02/roc-curve-v2.png" alt="roc_curve"></p>
+<p>对于如何应用，这里不详细展开，网上有很多写的不错的博客可以参考，例如：<a href="https://rviews.rstudio.com/2019/03/01/some-r-packages-for-roc-curves/" target="_blank" rel="noopener">https://rviews.rstudio.com/2019/03/01/some-r-packages-for-roc-curves/</a></p>
+<p>唯一一点需要提一下，就是在生信类的文献中，最常见的模型是预后模型，ROC实际上并不适合评估此类模型。毕竟对于预后来说，因变量实际上是连续变量。因此如果想要用ROC来进行评估，必须先将其因变量转变为二元类变量。这便是我们经常看到的 三年生存、五年生存 等等，指的是模型用于判断，患者在三年后（确切的来说是指 刚过完三年的这个当下）是否生存的状态。这一方法被称为 time-dependent ROC curve analysis<sup>4</sup>，推荐使用 R 包 timeROC 完成</p>
+<h1 id="DCA-曲线"><a href="#DCA-曲线" class="headerlink" title="DCA 曲线"></a>DCA 曲线</h1><p>上述传统的统计学评估方法（灵敏度、特异性、AUC等等），在临床应用中并不能很好的提供一个答案。比如，到底灵敏度多高的时候才应该使用这个模型，或者，在两个模型之中，到底应该使用哪一个。需要注意的是，与纯理论的统计学评估不同，临床中，模型的好坏并不能简单的通过AUC面积的大小进行判断。比如说，我们在评估两个早筛模型的优劣，模型A相比模型B拥有稍高一点的AUC面积，但早筛这个场景，更希望得到高水平的特异性，也就是尽量将健康人排除。在比较同样高水平的特异性下，模型B若是拥有更高的灵敏度，实际上选择模型B才是更优解。类似于这种问题，便可通过DCA分析进行解决。</p>
+<p>自2006年 DCA分析首次提出之后，短短几年内，被引数已上千。并被多篇顶级医学杂志，如 JAMA、JCO 所推荐。然而真正了解其原因、懂得如何去解读它的人并不多（作者在后续文章中自己说的，不是我瞎写的）。</p>
+<h2 id="DCA-曲线的意义解读及其原理"><a href="#DCA-曲线的意义解读及其原理" class="headerlink" title="DCA 曲线的意义解读及其原理"></a>DCA 曲线的意义解读及其原理</h2><p>简而言之，DCA曲线所展示的是 预测模型的 “净收益”，以及其相较于 “干预所有患者” 和 “对所有患者均不干预” 这两种情况 在不同的 Threshold probability 下的表现。Threshold probability，本质上取决于患者与医生对于 “干预手段” 的意愿。</p>
+<p>举个栗子，在列腺癌筛查的研究中，若患者被查出其前列腺特异性抗原（prostate-specific anigen PSA）出现升高，则患者往往会被要求去做活体检测以确认是否真实患有恶性前列腺癌。然而实际中，PSA升高的患者中，仅有很小一部分为恶性肿瘤。那么对于那些为患病的健康人来说，他们去做活检，便是过度治疗，并承担不必要的伤害。在这一例子中，“活检” 便是 “干预手段”。</p>
+<p>常规的DCA曲线往往由三条线构成：1）全部患者都进行干预；2）全部患者都不加以干预；3）根据预测模型结果来判断是否进行干预。在这三条线中，每一条均是一种<strong>策略</strong>。 </p>
+<p>下图所展示的便是上述案例，Intervention for all / Intervention for none 分别表示对所有患者均进行活检，以及对所有患者均不进行活检。Test 这一条虚线，指的是 PSA筛查 这一手段。这一筛查方法具有固定的灵敏度及特异性，故成直线，而非曲线。假设现在我们研发了一款全新的预测方法，可以更好的预测患者是否患有恶性肿瘤。那么这一预测方法，便是图中所画的 “Model”。从图中可以看的是，Model 这一曲线，在绝大情况下均有最高的收益值，也就是说按此模型结果来决定是否进行活检收益最高。除非患者、医生特别希望进行活检 – 意愿（Preference）非常低 – 只有此时 “全干预” 的策略收益高于模型。</p>
+<p><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1186%2Fs41512-019-0064-7/MediaObjects/41512_2019_64_Fig1_HTML.png?as=webp" alt="dca"></p>
+<p>理解了Benefit，接下来我们聊聊 Preference。即使在同样的病例面前，不同的患者、不同的医生，最后做出的决定可能都不一样。比如对于一个处于壮年的患者来说，尽可能的确诊才是他的诉求，如果能在可治愈时期发现癌症、并治愈癌症，那么他的收益才是最大的；但是对于一位体弱多病的老人来说，尽量避免活检、维持现在的生活才是他的诉求，因为活检会对患者产生一定的伤害，甚至导致感染。价格因素，是另一个重要的考量。 如果太贵，那么便需尽可能少做活检以减少对患者产生太大的经济负担。</p>
+<p>具体到x轴的实际内容上，是由 Threshold probability 这一值来反映 Preference 的情况。所谓 Threshold probability，指的是模型预测的患癌可能性。假设医生选择 10% 作为模型的阈值，则若患者使用该模型检测出 10% + 的值，则医生就会对其进行活检；反之则不会。以 10% 为阈值，还意味着医生认为 漏掉一个恶性肿瘤，比做一个不必要的活检要糟糕 9 倍。这个比例（1：9），便是作者所提出的 “exchange rate” 交换率。</p>
+<p>Net benefit 净收益的定义为：</p>
+<p>​    Net Benefit = Benefit - harm * exchange rate</p>
+<p>在刚刚那个示例中，如果该模型在一个100人的队列中进行验证，这个队列中所有人均检测出了PSA水平升高，且无其他明显表型。其中，有 25 个是真正的癌症患者，剩余75个为健康人。那么对于 10% 的exchange rate 来说：</p>
+<p>​    Net Benefit = 25% - 75% * (1 / 9) = 16.7%</p>
+<p><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1186%2Fs41512-019-0064-7/MediaObjects/41512_2019_64_Fig2_HTML.png?as=webp" alt="dca_preference"></p>
+<p>如此一来，便可以在一个合理的 Threshold Probability (也就是 exchange rate) 区间内计算出所有的 Net Benefit，并画出整个DCA曲线。</p>
+<p>当然，DCA这种评估方式也带来了明显的问题，因为 threshold probability 的纯主观的，各个医生会有不同的评估。假设一个医生完全没有主观意见的话，那么DCA曲线变对他<strong>毫无帮助</strong>。只有在考虑到了临床中各种因素之后，才能将其转换为较为具体的 threshold probability，并根据此来选择模型、策略。</p>
+<h2 id="DCA的实现方式"><a href="#DCA的实现方式" class="headerlink" title="DCA的实现方式"></a>DCA的实现方式</h2><p>在理解了DCA的原理之后，可以发现实现起来并不复杂。但我们并不需要从头计算，很多R包都可以实现这DCA曲线，这里推荐使用Y叔叔的R包 – <code>ggDCA</code> <sup>5</sup>。Y叔自己写了个详细的文章，这里就不再冗述了：<a href="https://mp.weixin.qq.com/s/dcN1BvmuSO7osWFPPq3pYg" target="_blank" rel="noopener">首发！决策曲线分析R包：ggDCA</a></p>
+<hr>
+<p>参考文献：</p>
+<ol>
+<li>Vickers AJ, Elkin EB. Decision curve analysis: a novel method for evaluating prediction models. Med Decis Making. 2006;26(6):565–74</li>
+<li>Vickers AJ, Van Calster B, Steyerberg EW. Net benefit approaches to the evaluation of prediction models, molecular markers, and diagnostic tests. BMJ. 2016;352:i6</li>
+<li>Vickers AJ, van Calster B, Steyerberg EW. A simple, step-by-step guide to interpreting decision curve analysis. Diagn Progn Res. 2019 Oct 4;3:18. doi: 10.1186/s41512-019-0064-7. PMID: 31592444; PMCID: PMC6777022.</li>
+<li>Kamarudin AN, Cox T, Kolamunnage-Dona R. Time-dependent ROC curve analysis in medical research: current methods and applications. BMC Med Res Methodol. 2017 Apr 7;17(1):53. doi: 10.1186/s12874-017-0332-6. PMID: 28388943; PMCID: PMC5384160.</li>
+<li><a href="https://cran.r-project.org/web/packages/ggDCA/index.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/ggDCA/index.html</a></li>
+</ol>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DCA/" rel="tag">DCA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ROC/" rel="tag">ROC</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-vicc" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/05/28/vicc/"
+    >癌症突变解读协会 -- VICC</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/05/28/vicc/" class="article-date">
+  <time datetime="2020-05-27T16:00:00.000Z" itemprop="datePublished">2020-05-28</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Cancer/">Cancer</a> / <a class="article-category-link" href="/categories/Cancer/Bioinformatics/">Bioinformatics</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>今天要介绍的是Variant Interpretation for Cancer Consortium (VICC) 癌症突变解读协会，这一协会隶属 Global Alliance for Genomic and Health 组织之下，旨在促进肿瘤界中的突变的解读。虽然 AMP/ASCO/CAP 在2017年就发布了这方面的指南，但细读之，就能发现里面留下了很多待解决的问题。而 VICC 项目的发起，就是为了解决这些问题，因此 VICC 的原文非常值得一读，文献地址请见文末</p>
+      
+      <a class="article-more-link" href="/2020/05/28/vicc/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Variant-Classification/" rel="tag">Variant Classification</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-recomm_parsehub" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/05/25/recomm_parsehub/"
+    >爬虫工具推荐 -- ParseHub</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/05/25/recomm_parsehub/" class="article-date">
+  <time datetime="2020-05-24T16:00:00.000Z" itemprop="datePublished">2020-05-25</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/IT/">IT</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>爬虫这玩意虽说入门简单，但写起来着实麻烦，更可恶的是在生信中用到的机会不多，基本脚本都是一次性的，用完一次后就再也用不上，每次再要用的时候又得回去查各个包的语法，特别不方便。终于，就在今天，我找到了一款可以一劳永逸的爬虫软件， <strong>无需自己编写任何代码</strong>，就能完成你能想到的全部爬虫功能，这就是 –  ParseHub</p>
+<p>具体怎么操作，ParseHub 自己有很完整的教程，安装好后跟着一步一步走就行，这里就不在冗述，只是简单介绍一下它的功能：</p>
+<ul>
+<li>通过点击来选择想要下载的内容（文字、图片均可）</li>
+<li>自动猜测需要下载的内容</li>
+<li>关联下载的信息</li>
+<li>支持“下一页”的跳转（可重复爬取同类型的页面）</li>
+<li>支持不同格式的页面跳转</li>
+<li>…</li>
+</ul>
+<p>虽然这款软件功能很多，但基本只要掌握以上几项功能，通过特异性组合，就能爬取到你想要的绝大数信息</p>
+<p>官方链接：</p>
+<p><a href="https://www.parsehub.com/" target="_blank" rel="noopener">https://www.parsehub.com/</a></p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" rel="tag">工具推荐</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-phasing" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/05/18/phasing/"
+    >Phasing</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/05/18/phasing/" class="article-date">
+  <time datetime="2020-05-17T16:00:00.000Z" itemprop="datePublished">2020-05-18</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Bioinformatics/">Bioinformatics</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>这一篇拖了挺久，一来是五一的时候出去玩了一趟，就偷了会懒，结果五一回来一直忙于工作，就又拖了一周，等我缓过神来才惊觉已经过去了半个多月，因此赶忙过来补上一篇。</p>
+<p>上文说到，phasing 的根本目的，是将测序所得的碱基序列，重新正确的划分至他们本身的起源。而这一方法，在绝大数语境之中，指的便是将序列归为父亲或者母亲的染色体之中。目前大多数 phasing 的方法都是基于这一目的展开的，在肿瘤之中并不适用，由于肿瘤异质性的存在，测得的碱基序列可被归到不同的亚克隆之中，这使得传统 phasing 方法无法被使用。</p>
+      
+      <a class="article-more-link" href="/2020/05/18/phasing/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Phasing/" rel="tag">Phasing</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-Multi-nucleotide-variants" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/04/28/Multi-nucleotide-variants/"
+    >Multi-nucleotide variants</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/04/28/Multi-nucleotide-variants/" class="article-date">
+  <time datetime="2020-04-27T16:00:00.000Z" itemprop="datePublished">2020-04-28</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Bioinformatics/">Bioinformatics</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>之前写过一篇关于MNV的文章，但感觉写的逻辑混乱，故推翻重写一篇</p>
+<p>MNV (multi-nucleotide variants) 即多个碱基发生变化的突变，是有两个甚至多个 SNVs / InDels 合并而成，至于为何不将这些 SNVs / InDels 分别对待，则由于它在临床上、生物学上具有特殊的意义，因此特意归为一类突变。</p>
+<p>至今为止，关于MNV并没有一个准确的定义，虽然大家都明确同一单倍型上的突变需要被合并，但无人指出具体<strong>多近</strong>的突变应该被合并。</p>
+      
+      <a class="article-more-link" href="/2020/04/28/Multi-nucleotide-variants/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Haplotype/" rel="tag">Haplotype</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MNV/" rel="tag">MNV</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Phasing/" rel="tag">Phasing</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-tumour_stages_grades" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/04/24/tumour_stages_grades/"
+    >肿瘤的分级、分期、分型</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/04/24/tumour_stages_grades/" class="article-date">
+  <time datetime="2020-04-23T16:00:00.000Z" itemprop="datePublished">2020-04-24</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Cancer/">Cancer</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>这篇文章一开始只打算写个TNM分期的介绍，但后来学习到临床上的各种划分方式，索性就仔细研究了一下，一起记下来。</p>
+<p>肿瘤之中有分级、分期与分型之说，而分级 (grading) 和分期 (staging)  这两个概念常常被放在一起讨论，初次遇见往往会被混淆。首先它们均是对恶性肿瘤 (malignant tumour) 的描述方式，分级 grading 是一种描述肿瘤恶性程度的指标，也就是肿瘤的分化程度；而分期 staging 则是描述恶性肿瘤的生长范围和扩散程度，在很大的程度上可以用于指导治疗方式和预后的评估。</p>
+      
+      <a class="article-more-link" href="/2020/04/24/tumour_stages_grades/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TNM-stages/" rel="tag">TNM stages</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WHO-tumour-classification/" rel="tag">WHO tumour classification</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tumour-grading/" rel="tag">tumour grading</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-vic" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/04/10/vic/"
+    >肿瘤突变分类 -- VIC</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/04/10/vic/" class="article-date">
+  <time datetime="2020-04-09T16:00:00.000Z" itemprop="datePublished">2020-04-10</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Bioinformatics/">Bioinformatics</a> / <a class="article-category-link" href="/categories/Bioinformatics/Cancer/">Cancer</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>虽然<strong>肿瘤突变指南</strong>早在2017年1月就由AMP，ASCO和CAP联名发布，但过去的三年里，实际上采用次标准的公司并不多，只有最近几个月才采取此标准的呼声才逐渐强烈。</p>
+<p>抛开大家的采用的意愿不谈，个人认为此标准难以统一的原因是，指南中存在很多模糊、甚至相冲突的概念，很容易造成大家的困惑。例如指南中提出的10个判断标准，并没有说明具体的划分界限，以及各个标准所占的比重为多少。这样在实际操作过程中，就很容易会产生分歧。</p>
+<p>而前两日我忽然发现王凯团队开发的一款名为 VIC (Variant Interpretation for Cancer) 的肿瘤突变分类软件，在指南的基础上融合了 Global Alliance for Genomics and Health (GA4GH) 组织中提及的肿瘤评判资料 ，对上述提到的模糊区域进行明确的定义及填充，能很大程度上实现突变分类自动化这一过程。</p>
+      
+      <a class="article-more-link" href="/2020/04/10/vic/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Variant-Classification/" rel="tag">Variant Classification</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-biosoftware" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2019/12/04/biosoftware/"
+    >生信软件安装</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2019/12/04/biosoftware/" class="article-date">
+  <time datetime="2019-12-03T16:00:00.000Z" itemprop="datePublished">2019-12-04</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/IT/">IT</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>生信中很多软件安装起来都相当麻烦，这里推荐两种途径来解决这一问题：bioconda 以及 docker</p>
+      
+      <a class="article-more-link" href="/2019/12/04/biosoftware/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Conda/" rel="tag">Conda</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-ssh_tips" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2019/06/10/ssh_tips/"
+    >ssh快连+免密</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2019/06/10/ssh_tips/" class="article-date">
+  <time datetime="2019-06-09T16:00:00.000Z" itemprop="datePublished">2019-06-10</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/IT/">IT</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>由于工作需要，我往往会在多台服务器上反复切换，将文件从一个服务器传到另一个服务器上，因此会非常频繁的用到 <code>scp ssh</code>  这些命令，下面这两个功能能很大程度的省去其中的一些麻烦</p>
+<h2 id="简化SSH"><a href="#简化SSH" class="headerlink" title="简化SSH"></a>简化SSH</h2><p>首先在家目录下建一个<code>~/.ssh</code> 目录，然后编辑一个名为 <code>config</code> 的文件。</p>
+<p>在这个文件中输入想要简化的服务器，例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Host server1</span><br><span class="line">  Hostname 123.456.78.910</span><br><span class="line">  User kai</span><br><span class="line">  ForwardX11 yes</span><br></pre></td></tr></table></figure>
+
+<p>并将此文件的权限给改成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 700 config</span><br></pre></td></tr></table></figure>
+
+<p>就大功告成了</p>
+<p>之后想要链接那台服务器，只需要：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh server1</span><br></pre></td></tr></table></figure>
+
+<p>就okay了</p>
+<h2 id="SSH-免密"><a href="#SSH-免密" class="headerlink" title="SSH 免密"></a>SSH 免密</h2><p>免密的过程也十分简单，两步就能完成：</p>
+<ol>
+<li><p>先生成一对 public/private key</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>把其中的public key 给放到另外那台服务器上</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub remote_host</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+  </article>
+  
+
+  
+</section>
+</div>
+
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020-2021
+        Kai
+      </li>
+      <li>
+        
+        Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="岛"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+      strings: ['面朝大海，春暖花开', '愿你一生努力，一生被爱', '想要的都拥有，得不到的都释怀'],
+      startDelay: 0,
+      typeSpeed: 200,
+      loop: true,
+      backSpeed: 100,
+      showCursor: true
+    });
+  } catch (err) {
+  }
+
+</script>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+
+
+    
+  </div>
+</body>
+
+</html>

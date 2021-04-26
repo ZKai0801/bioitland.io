@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>生信软件安装</title>
+    <url>/2019/12/04/biosoftware/</url>
+    <content><![CDATA[<p>生信中很多软件安装起来都相当麻烦，这里推荐两种途径来解决这一问题：bioconda 以及 docker</p>
+<a id="more"></a>
+
+<h3 id="Bioconda"><a href="#Bioconda" class="headerlink" title="Bioconda"></a>Bioconda</h3><p>Anaconda 是一个非常常用的包管理软件，同时也会对环境进行统一的管理，而Bioconda正是其之下的一个专门管控生信软件的工具，具体安装步骤如下</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 首先下载并安装 miniconda （anaconda的简版）</span></span><br><span class="line">wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</span><br><span class="line">sh Miniconda3-latest-Linux-x86_64.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认情况下，miniconda会被安装在家目录之下</span></span><br><span class="line"><span class="comment"># 所有可执行文件，即在 ~//miniconda3/bin 下面</span></span><br><span class="line"><span class="comment"># 而不同的环境，会被安装在 ~/miniconda3/envs 之下</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 防止conda开机自动启动</span></span><br><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加频道 （国内的源，速度更快）</span></span><br><span class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free</span><br><span class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge</span><br><span class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当频道添加完毕，则可开始安装生信软件</span></span><br><span class="line"><span class="comment"># 安装方式有两种，第一中是在当前环境下直接安装：</span></span><br><span class="line"><span class="comment"># 例：</span></span><br><span class="line">conda install bwa</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二种则是建立一个虚拟环境，并安装软件</span></span><br><span class="line"><span class="comment"># 这里我们建立了一个名叫 aligner 的环境，并在这个环境中安装了 tophat, bowtie2 和 star 三款比对软件</span></span><br><span class="line">conda create -n aligner tophat bowtie2 star</span><br><span class="line"></span><br><span class="line"><span class="comment"># 一些常用命令：</span></span><br><span class="line"><span class="comment"># 查看现有环境</span></span><br><span class="line">conda env list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进入某一虚拟环境</span></span><br><span class="line">conda activate aligner</span><br><span class="line"></span><br><span class="line"><span class="comment"># 推出当前虚拟环境</span></span><br><span class="line">conda deactivate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看当前环境中已安装的包</span></span><br><span class="line">conda list</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h3><p>docker不同与bioconda，并非一个专门安装生信软件的管理工具，而是一个用于软件的打包、发布、移植的通用工具。<br>如所需生信软件在bioconda上并不存在，并且直接安装过于繁琐，则可尝试在docker hub上先搜索有无他人打包完成的镜像。若以上方法均难以实现，再自己配置打包。然而自己制作镜像的难度较大，这里只简单介绍一下docker的基础原理以及使用方法：</p>
+<ol>
+<li><p>image – 镜像 与 container – 容器</p>
+<p>镜像与容器的关系，有点类似于python中类与实例的关系</p>
+<p>镜像是类，而容器是这个类的一个实例。也就意味着一个镜像可以创建很多的容器，这些容器独立运行，互不干扰。镜像本身并不能运行，它只能当作一个创建容器用的模板。</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>Volume – 卷（数据管理）</p>
+<p>数据主要分为两类，持久化的与非持久化的。 </p>
+<p>而Docker擅长的是非持久化数据，即每个容器创立之时就会自动创建存储，此存储从属于容器，并与容器保持相同生命周期， 这意味着删除容器也会删除全部非持久化数据。</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装docker</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install -y docker-engine</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过 Dockerfile 建立一个 container</span></span><br><span class="line"><span class="comment"># 假设这个文件存储在 ~/docker_test 这个文件夹中</span></span><br><span class="line">docker build ~/docker_test -t ContainerName:TagName</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者在 docker hub 上寻找并拉去一个 container</span></span><br><span class="line">docker search cnvkit</span><br><span class="line">docker pull docker.io/etal/cnvkit</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行docker container中的文件</span></span><br><span class="line">docker run --rm etal/cnvkit /usr/<span class="built_in">local</span>/bin/cnvkit.py --<span class="built_in">help</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 推荐方法</span></span><br><span class="line"><span class="comment"># 在后台运行，container保持运行状态</span></span><br><span class="line"><span class="comment"># -v + -p 挂载并且监听</span></span><br><span class="line"><span class="comment"># 这行命令会输出一行 container ID</span></span><br><span class="line">docker run -v `<span class="built_in">pwd</span>`:/data_test -p 5000:80 -itd etal/cnvkit </span><br><span class="line"></span><br><span class="line"><span class="comment"># 在已创建的container中执行命令</span></span><br><span class="line">docker <span class="built_in">exec</span> [container ID] /usr/<span class="built_in">local</span>/bin/cnvkit.py batch /data_test/NGS190530-11DF.sorted.dedup.bam -r /data_test/DF.flat.cnn -p 16 -d /data_test</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>IT</category>
+      </categories>
+      <tags>
+        <tag>Conda</tag>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Phasing</title>
+    <url>/2020/05/18/phasing/</url>
+    <content><![CDATA[<p>这一篇拖了挺久，一来是五一的时候出去玩了一趟，就偷了会懒，结果五一回来一直忙于工作，就又拖了一周，等我缓过神来才惊觉已经过去了半个多月，因此赶忙过来补上一篇。</p>
+<p>上文说到，phasing 的根本目的，是将测序所得的碱基序列，重新正确的划分至他们本身的起源。而这一方法，在绝大数语境之中，指的便是将序列归为父亲或者母亲的染色体之中。目前大多数 phasing 的方法都是基于这一目的展开的，在肿瘤之中并不适用，由于肿瘤异质性的存在，测得的碱基序列可被归到不同的亚克隆之中，这使得传统 phasing 方法无法被使用。</p>
+<a id="more"></a>
+
+<p>抛开实验方法不谈，纯生信的 phasing 方法主要分为三种：family-based 通过家系分型；population-based 通过族群分型；以及 read-based 从测序序列进行分型。下面让我一一道来</p>
+<h1 id="1-Family-based-phasing"><a href="#1-Family-based-phasing" class="headerlink" title="1. Family-based phasing"></a>1. Family-based phasing</h1><p>家系分型，可谓是所有 phasing 方法中最为精准的一种，通过对一家三口的基因组进行测序及比较，便能准确的将被测者（子女）的两个单倍体区分开来，如下图：</p>
+<p><img src="https://pic4.zhimg.com/80/v2-6218beff25542ed442876b05d812b4fb_1440w.jpg" alt="family_phasing"></p>
+<p>比如 父亲为AA，母亲为BB，则子女必为AB，其中 A 必定来自父亲，而 B 必定来自于母亲。当然这种方法并没办法完全区分所有的位点。如图中倒数第四个位点，当父母子女均为 AB 杂合子时，则无法区分</p>
+<h1 id="2-Population-based-phasing"><a href="#2-Population-based-phasing" class="headerlink" title="2. Population-based phasing"></a>2. Population-based phasing</h1><p>从理论上来看，通过减数分裂中发生的基因重组，后代个体的染色体将会被完全的重组一遍，当然这一过程需要持续足够长的时间。而人类诞生至今所经历的时间远远达不到染色体的完全重组，因此便有了 linkage disequilibrium (LD) 的概念，即在人群之中，相邻的多个位点会出现共同遗传的特征，这些共同遗传的位点，就被称为 LD block。这种现象的产生，便是因为基因重组在历史上并未在这些位点之间产生。由此我们可以推断，一个更古老的族群，会比年轻的族群中包含更短的 LD block。事实也确实如此，非洲人群的 LD block 相对亚洲人、欧洲人确实更短。</p>
+<p>通过人群中的这一特征，我们便可以利用统计学方法建立起一套群体特异的 reference map，然后便能从我们测序所得的序列中找出最有可能的单倍型排列方式。当然，可想而知的是，这一方法最大的局限性在于它无法实现个体特性性突变以及那些罕见突变，只能对人群中的常见突变做到区分。</p>
+<h1 id="3-Read-based-phasing"><a href="#3-Read-based-phasing" class="headerlink" title="3. Read-based phasing"></a>3. Read-based phasing</h1><p>Read-based phasing 是一种仅依赖于测序所得序列的 phasing 方法，与以上两种 phasing 方式不同，它不需要借助其他人的测序结果，仅需要本身样本进行比对、甚至组装，来判断突变是否存在于同一单倍型上。显而易见的是，这种方法最受测序长度的影响，二代测序由于读长的限制，只能检测到 150bp 以内的单倍型；当然，以此代价换来的是可以精确的发现 de novo 的单倍型，这让其在肿瘤方面的应用变得尤为突出。</p>
+<p>支持read-based phasing的软件很多，如MAC，但这里我们重点谈一下 GATK 里面对单倍型的处理。GATK 流程的第一步是从 BAM 文件中进行常规的 call 突变，然后使用 ReadBackPhasing tool 从得到的 vcf 文件中重新考虑所有的 reads 以找出最有可能的单倍型</p>
+<p>这一工具在现在版本的 gatk 中默认是自动开启的，然而需要注意的是，这一算法是针对 germline 研发的。而在肿瘤当中，不同的亚克隆相当不同的单倍型，这些过多的单倍型会使得能检测的信号变弱，从而无法检测到单倍型</p>
+<p>虽然 GATK 团队认为他们的算法有很大的提升空间，但与其他方法相比， GATK的算法已经能达到非常高的灵敏度和特异性了</p>
+<p><img src="https://raw.githubusercontent.com/ZKai0801/bioitland.io/master/imgs/mnv_gatk.png" alt="mnv_gatk"></p>
+<p>在 <code>mutect2</code> 当中，单倍型也同样会被检测出来，可通过 <code>--max-mnp-distance</code> 参数来指定最长的合并距离，默认下会将1bp以内的自动合并。但需要注意的是，GATK只会合并PASS的突变，也就是它们认为是真阳性的突变，如果你拥有一套自己的真假突变过滤逻辑，就需要自行合并</p>
+<p>合并的逻辑并不难，我们仅需要找出GATK已经为我们判断好的单倍型即可，在VCF文件中，这个信息被收录在 PGT 和 PID 之中，下文则是 VCF header中对其的描述：</p>
+<blockquote>
+<p>PGT: “Physical phasing haplotype information, describing how the alternate alleles are phased in relation to one another”<br>PID: “Physical phasing ID information, where each unique ID within a given sample (but not across samples) connects records within a phasing group”</p>
+</blockquote>
+<p>简单的来说，就是PGT表示的是突变之间的关系（顺势还是反式），共有两种表示方式：0|1，1|0 </p>
+<p>由于目前单倍型主要考虑的是胚系，因此仅有父系和母系之间的区别，0|1，1|0则是分别表示来自于父母之中的某一方，当然具体是父方还是，母方这个未知</p>
+<p>而 PID 则是GATK赋予同一单倍型的编号，故在同一单倍型中的突变拥有相同PID。</p>
+<p>理解了这个，合并起来就容易多了，具体的合并逻辑可参考我github仓库中的 <a href="https://github.com/ZKai0801/tertiary_analysis/blob/master/merge_mnv.py" target="_blank" rel="noopener">merge_mnv.py</a> ，这个脚本需要你提前将假阳性的突变从vcf中去掉，再将剩下的mnp合并起来，距离默认为5bp内</p>
+]]></content>
+      <categories>
+        <category>Bioinformatics</category>
+      </categories>
+      <tags>
+        <tag>Phasing</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>爬虫工具推荐 -- ParseHub</title>
+    <url>/2020/05/25/recomm_parsehub/</url>
+    <content><![CDATA[<p>爬虫这玩意虽说入门简单，但写起来着实麻烦，更可恶的是在生信中用到的机会不多，基本脚本都是一次性的，用完一次后就再也用不上，每次再要用的时候又得回去查各个包的语法，特别不方便。终于，就在今天，我找到了一款可以一劳永逸的爬虫软件， <strong>无需自己编写任何代码</strong>，就能完成你能想到的全部爬虫功能，这就是 –  ParseHub</p>
+<p>具体怎么操作，ParseHub 自己有很完整的教程，安装好后跟着一步一步走就行，这里就不在冗述，只是简单介绍一下它的功能：</p>
+<ul>
+<li>通过点击来选择想要下载的内容（文字、图片均可）</li>
+<li>自动猜测需要下载的内容</li>
+<li>关联下载的信息</li>
+<li>支持“下一页”的跳转（可重复爬取同类型的页面）</li>
+<li>支持不同格式的页面跳转</li>
+<li>…</li>
+</ul>
+<p>虽然这款软件功能很多，但基本只要掌握以上几项功能，通过特异性组合，就能爬取到你想要的绝大数信息</p>
+<p>官方链接：</p>
+<p><a href="https://www.parsehub.com/" target="_blank" rel="noopener">https://www.parsehub.com/</a></p>
+]]></content>
+      <categories>
+        <category>IT</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+        <tag>工具推荐</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ssh快连+免密</title>
+    <url>/2019/06/10/ssh_tips/</url>
+    <content><![CDATA[<p>由于工作需要，我往往会在多台服务器上反复切换，将文件从一个服务器传到另一个服务器上，因此会非常频繁的用到 <code>scp ssh</code>  这些命令，下面这两个功能能很大程度的省去其中的一些麻烦</p>
+<h2 id="简化SSH"><a href="#简化SSH" class="headerlink" title="简化SSH"></a>简化SSH</h2><p>首先在家目录下建一个<code>~/.ssh</code> 目录，然后编辑一个名为 <code>config</code> 的文件。</p>
+<p>在这个文件中输入想要简化的服务器，例：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Host server1</span><br><span class="line">  Hostname 123.456.78.910</span><br><span class="line">  User kai</span><br><span class="line">  ForwardX11 yes</span><br></pre></td></tr></table></figure>
+
+<p>并将此文件的权限给改成：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chmod 700 config</span><br></pre></td></tr></table></figure>
+
+<p>就大功告成了</p>
+<p>之后想要链接那台服务器，只需要：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh server1</span><br></pre></td></tr></table></figure>
+
+<p>就okay了</p>
+<h2 id="SSH-免密"><a href="#SSH-免密" class="headerlink" title="SSH 免密"></a>SSH 免密</h2><p>免密的过程也十分简单，两步就能完成：</p>
+<ol>
+<li><p>先生成一对 public/private key</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>把其中的public key 给放到另外那台服务器上</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub remote_host</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>IT</category>
+      </categories>
+      <tags>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>肿瘤的分级、分期、分型</title>
+    <url>/2020/04/24/tumour_stages_grades/</url>
+    <content><![CDATA[<p>这篇文章一开始只打算写个TNM分期的介绍，但后来学习到临床上的各种划分方式，索性就仔细研究了一下，一起记下来。</p>
+<p>肿瘤之中有分级、分期与分型之说，而分级 (grading) 和分期 (staging)  这两个概念常常被放在一起讨论，初次遇见往往会被混淆。首先它们均是对恶性肿瘤 (malignant tumour) 的描述方式，分级 grading 是一种描述肿瘤恶性程度的指标，也就是肿瘤的分化程度；而分期 staging 则是描述恶性肿瘤的生长范围和扩散程度，在很大的程度上可以用于指导治疗方式和预后的评估。</p>
+<a id="more"></a>
+
+<h1 id="分期-–-tumour-staging"><a href="#分期-–-tumour-staging" class="headerlink" title="分期 – tumour staging"></a>分期 – tumour staging</h1><p>TNM分期是目前国际上最被认可的肿瘤发展阶段的分期系统，是从显微镜下用肉眼进行判读的分期方式。它先从三个角度对恶性肿瘤进行描述：</p>
+<ul>
+<li>T: (tumour)  – 原发灶的肿瘤大小</li>
+<li>N: (lymph node) – 扩散到局部淋巴结的程度</li>
+<li>M: (metastasis) – 是否有远处转移</li>
+</ul>
+<p>每一角度均需要给出一个判断结果：</p>
+<table>
+<thead>
+<tr>
+<th align="left">分期符号</th>
+<th align="left">临床意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Tx</td>
+<td align="left">原发肿瘤的情况无法评估</td>
+</tr>
+<tr>
+<td align="left">T0</td>
+<td align="left">没有证据说明存在原发肿瘤</td>
+</tr>
+<tr>
+<td align="left">Tis</td>
+<td align="left">早期肿瘤没有播散至相邻组织</td>
+</tr>
+<tr>
+<td align="left">T1-4</td>
+<td align="left">大小和/或原发肿瘤的范围</td>
+</tr>
+<tr>
+<td align="left">Nx</td>
+<td align="left">区域淋巴结情况无法评估</td>
+</tr>
+<tr>
+<td align="left">N0</td>
+<td align="left">没有区域淋巴结受累（淋巴结未发现肿瘤）</td>
+</tr>
+<tr>
+<td align="left">N1</td>
+<td align="left">只有附近的少数淋巴结受到累及</td>
+</tr>
+<tr>
+<td align="left">N2</td>
+<td align="left">介于N1和N3的状况之间的情况（并不适用于所有肿瘤）</td>
+</tr>
+<tr>
+<td align="left">N3</td>
+<td align="left">远处的和/或更多的淋巴结受到累及（并不适用于所有肿瘤）</td>
+</tr>
+<tr>
+<td align="left">M0</td>
+<td align="left">没有远处转移（肿瘤没有播散至体内其他部分）</td>
+</tr>
+<tr>
+<td align="left">M1</td>
+<td align="left">有远处转移（肿瘤播散至体内其他部分）</td>
+</tr>
+</tbody></table>
+<p>最后根据这三个层面判断结果进行分期，分期的规则视癌症种类不同而不同</p>
+<p>我们经常听到的肿瘤的早期、中期、晚期，指的就是这个标准。肿瘤如果越早被发现，治愈效果就越好，但问题在于，越是早期的肿瘤，就越难被检出</p>
+<h1 id="分级-–-tumour-grading"><a href="#分级-–-tumour-grading" class="headerlink" title="分级 – tumour grading"></a>分级 – tumour grading</h1><p>肿瘤分级、亦被称为肿瘤分化，指的是肿瘤细胞与它原发灶中的正常组织细胞的相似层度。一般情况下会分为三到四个等级，如果肿瘤细胞与正常细胞的相似度越高，则分化程度越高；相反，如果肿瘤细胞与正常细胞的相似度越低，则分化层度越低</p>
+<ul>
+<li><p>Grade X – undetermined</p>
+<p>无法区分</p>
+</li>
+<li><p>Grade 1 – well differentiated</p>
+<p>肿瘤细胞与正常细胞十分相似，预后良好</p>
+</li>
+<li><p>Grade 2 – moderately differentiated</p>
+<p>预后有好有坏</p>
+</li>
+<li><p>Grade 3/4 – Badly differentiated / undifferentiated</p>
+<p>此类肿瘤相对容易迁移，预后相对较差</p>
+</li>
+</ul>
+<p>具体的分化标准依然是视肿瘤类型而不同，如乳腺癌、前列腺癌都有自己的分化判别系统。</p>
+<p>乳腺癌中最常见的是诺丁汉分化标准 (Nottingham Grading System)，它对乳腺癌的腺管形成 (tubule formation) 比例、核分型 (nuclear grade) 以及核分裂现象计数 (mitotic rate) 这三个层面进行了评估，能够得到更为客观的分级结果</p>
+<h1 id="分型-–-tumour-classification"><a href="#分型-–-tumour-classification" class="headerlink" title="分型 – tumour classification"></a>分型 – tumour classification</h1><p>非肿瘤临床专业的可能会过于小看肿瘤分型（分类）这一问题，事实上，我在仔细了解这个问题之前，也一直以为肿瘤的分型是一个相对简单的问题。但实际上它却是最为核心且复杂的领域，并且随着近年来分子生物学、放射学等领域的飞速发展而不断的改进</p>
+<p>肿瘤的分型最为权威的是WHO标准：</p>
+<p><a href="https://tumourclassification.iarc.who.int/welcome/" target="_blank" rel="noopener">https://tumourclassification.iarc.who.int/welcome/</a></p>
+<p>它以癌症的原发器官为基础，按照诊断标准、病理状态、分子表型等对各癌症类型进行了严格的区分，而医生则可根据分型的不同可以给出不同的治疗方案。由于此问题过于复杂，这里就不展开细节进行讨论，可以等到需要研究某一单一癌症的时候再细细了解</p>
+]]></content>
+      <categories>
+        <category>Cancer</category>
+      </categories>
+      <tags>
+        <tag>TNM stages</tag>
+        <tag>tumour grading</tag>
+        <tag>WHO tumour classification</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>肿瘤突变分类 -- VIC</title>
+    <url>/2020/04/10/vic/</url>
+    <content><![CDATA[<p>虽然<strong>肿瘤突变指南</strong>早在2017年1月就由AMP，ASCO和CAP联名发布，但过去的三年里，实际上采用次标准的公司并不多，只有最近几个月才采取此标准的呼声才逐渐强烈。</p>
+<p>抛开大家的采用的意愿不谈，个人认为此标准难以统一的原因是，指南中存在很多模糊、甚至相冲突的概念，很容易造成大家的困惑。例如指南中提出的10个判断标准，并没有说明具体的划分界限，以及各个标准所占的比重为多少。这样在实际操作过程中，就很容易会产生分歧。</p>
+<p>而前两日我忽然发现王凯团队开发的一款名为 VIC (Variant Interpretation for Cancer) 的肿瘤突变分类软件，在指南的基础上融合了 Global Alliance for Genomics and Health (GA4GH) 组织中提及的肿瘤评判资料 ，对上述提到的模糊区域进行明确的定义及填充，能很大程度上实现突变分类自动化这一过程。</p>
+<a id="more"></a>
+
+<h1 id="分类标准"><a href="#分类标准" class="headerlink" title="分类标准"></a>分类标准</h1><p>VIC将指南中提及的 10 大标准按是否可自动化，分为两类，其中可自动打分的标准有 7 个，剩余 3 个标准需要人工审核，当然也提前人工构建好，用参数加入软件让其自动判断。详情如下图：</p>
+<p><img src="https://raw.githubusercontent.com/ZKai0801/bioitland.io/master/imgs/vic_flowchart.png" alt="vic_flowchart"></p>
+<h2 id="1-Therapies-clinical-impacts"><a href="#1-Therapies-clinical-impacts" class="headerlink" title="1. Therapies (clinical impacts)"></a>1. Therapies (clinical impacts)</h2><p>这实际上指的就是指南中对于生物标志物的四级分类（如下图）</p>
+<p>A) FDA 及 PG (professional guideline) 如 NCCN ；</p>
+<p>B) 达成专家共识、或者多组小型研究；</p>
+<p>C) FDA 和 PG 中对于不同癌肿的研究，或者是进行临床试验的研究；</p>
+<p>D) 临床前研究中的标志物，或者伴随性标志物</p>
+<p><img src="https://raw.githubusercontent.com/ZKai0801/bioitland.io/master/imgs/vic_evidence.png" alt="vic_evidence"></p>
+<p>对此，VIC 收集、整合了 <a href="https://pmkb.weill.cornell.edu/" target="_blank" rel="noopener">PMKB</a> 和 <a href="https://www.cancergenomeinterpreter.org/home" target="_blank" rel="noopener">CGI</a> 中的数据，并融入 VIC 自带数据库中。对于属于 A/B 等级的生物标志物 (CGI中列为 guideline 或者 approved，并且癌肿吻合 )，突变将会被认为具有强临床意义，并得分2分；对于 C/D 类生物标志物 (CGI中列为 preclinical、 case report 亦或者 trials，或者收录在PMKB之中)，突变会被认为具有潜在临床意义，得分1分；剩余接得0分。</p>
+<p>同时，VIC 收录了 CIViC数据库中的证据总结，可对突变进行提示</p>
+<h2 id="2-Mutation-Type"><a href="#2-Mutation-Type" class="headerlink" title="2. Mutation Type"></a>2. Mutation Type</h2><p>突变种类，例如 likely loss-of-function (LoF) 功能缺失突变、非同义突变、CNV、融合等。VIC 预先将 ClinVar 以及 ExAC 中 null variants（frameshift, splice, stop-gain, stop-loss）突变定义为 LoF 突变。实际打分过程中，将 activiting 以及 LoF 突变评分1分，其余的非同义突变、未知突变类型等皆为0分</p>
+<h2 id="3-Variant-Frequency"><a href="#3-Variant-Frequency" class="headerlink" title="3. Variant Frequency"></a>3. Variant Frequency</h2><p>突变频率 VAF， 可用于推测该突变是否来自于胚系。对于SNP来说，胚系突变的VAF大约在50%或100%附近，但对于某些突变如 indel，它们会造成对于正常序列的偏好性的捕获或者扩增，所以导致 &lt; 50% 的VAF。</p>
+<p>如检测过程没有使用配对的正常组织，这里需要实验室<strong>自己设定</strong>一个明确界限，用于区分胚系和体系突变。由于这个标准跟测序流程有很大关系，不同实验室的界限往往相差甚远，因此VIC没有制定明确的标准。当然，用户可以通过参数来进行区分</p>
+<h2 id="4-Potential-Germline"><a href="#4-Potential-Germline" class="headerlink" title="4. Potential Germline"></a>4. Potential Germline</h2><p>此标准跟标准三类似，目的是为判断是否可能为胚系突变。用户可自己通过软件预测，或者配对样本来进行判断</p>
+<h2 id="5-Population-Frequency"><a href="#5-Population-Frequency" class="headerlink" title="5. Population Frequency"></a>5. Population Frequency</h2><p>这是最常见的过滤标准，即在各人群频率数据库中寻找该突变，若突变存在并且MAF &gt; 0.01 则被视为多态性/良性突变，可直接过滤</p>
+<p>VIC 使用了四大人群数据库：</p>
+<ul>
+<li><p>1000 Genome Project (1000g); </p>
+</li>
+<li><p>Exome Aggregation Consortium (ExAC); </p>
+</li>
+<li><p>NHLBI GO Exome Sequencing Project (ESP6500); </p>
+</li>
+<li><p>Genome Aggregation Database (GnomAD 2.1.1)</p>
+</li>
+</ul>
+<h2 id="6-Germline-Mutation-Database"><a href="#6-Germline-Mutation-Database" class="headerlink" title="6. Germline Mutation Database"></a>6. Germline Mutation Database</h2><p>对于胚系突变数据库，VIC仅使用 ClinVar 来进行注释，即 CLINSIG 中仅标记为 pathogenic  的突变得分2分；仅标记为 benign 或者 likely benign 的突变得分1分；剩余的情况如冲突、意义未名皆得分0分</p>
+<h2 id="7-Somatic-Mutation-Database"><a href="#7-Somatic-Mutation-Database" class="headerlink" title="7. Somatic Mutation Database"></a>7. Somatic Mutation Database</h2><p>这里指的其实是癌症突变数据库，如TCGA、ICGC等，这类数据库记载了在不同癌症中发现的体系突变。</p>
+<p>对此，VIC参考了 COSMIC 以及 ICGC 数据库，若突变同时在两个数据库中出现，则打分2分；若在一个数据库中出现，则评分1分；若不出现，则为0分</p>
+<p>需要注意的是，由于 COSMIC 需要购买才能够获取，我们使用的 v70 版本已是2014年发布的，至今时间已经太久，可能有很多新的突变没被记录。因此此处我打算更换为 TCGA 数据库，原理上并无区别，当然此处还有待商议。</p>
+<h2 id="8-Predictive-Software"><a href="#8-Predictive-Software" class="headerlink" title="8. Predictive Software"></a>8. Predictive Software</h2><p>这里和 ACMG 的遗传指南判读标准一致，但值得注意的是，由于绝大数的软件都是基于胚系突变而非体系突变进行的，因此蛋白质上的变化不一定会直接致成致病性的后果。</p>
+<p>VIC融合了七种预测软件的结果：</p>
+<ul>
+<li>MetaSVM; </li>
+<li>SIFT;</li>
+<li>Polyphen2;</li>
+<li>MetaLR;</li>
+<li>FATHMM;</li>
+<li>MutationTaster;</li>
+<li>GERP++</li>
+</ul>
+<p>若三者以上预测结果为致病，则打分2分；若致病、良性结果均出现，则打分1分；若三者以上预测结果为良性，则打分0分</p>
+<h2 id="9-Pathway-Involvement"><a href="#9-Pathway-Involvement" class="headerlink" title="9. Pathway Involvement"></a>9. Pathway Involvement</h2><p>关键通路中的基因，若发生的非同义突变，往往会对癌症的产生、进展产生影响，因此了解基因是否位于可用药的通路之中非常重要。</p>
+<p>VIC 整合了两大通路数据库：Cancer Gene Census  <a href="https://cancer.sanger.ac.uk/census" target="_blank" rel="noopener">CGC</a> ; Kyoto Encyclopedia of Genes and Genomes <a href="https://cancer.sanger.ac.uk/census" target="_blank" rel="noopener">KEGG</a>，将位于关键癌症通路上的基因存于<code>cancer_genes.list</code> 文件中，而癌症相关通路的基因存于 <code>cancer_pathways.list</code></p>
+<p>对于突变处于 cancer_genes 中的基因之中，得分2分；若突变处于 cancer_pathway 之中，则得分1分；剩余突变均0分</p>
+<p>当然，VIC承认自己的数据可能不全，因此允许用户添加自定义基因</p>
+<h2 id="10-Publications"><a href="#10-Publications" class="headerlink" title="10. Publications"></a>10. Publications</h2><p>很多研究都发布了关于突变功能、临床影响的文章，但由于这些文献使用不同的实验方法、分析流程，VIC 并没有自动去完成这一步的工作。不过VIC整合了civic数据库中出现的文献，可用于参考</p>
+<p>用户可自行整理文献，并通过参数传递给VIC进行评分</p>
+<p>下图为VIC 评分标准：</p>
+<p><img src="https://raw.githubusercontent.com/ZKai0801/bioitland.io/master/imgs/vic_scoring.png" alt="vic_scoring"></p>
+<h1 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h1><p>就像王凯老师在原文中所说，VIC本意是用于辅助人工的判读，现阶段并不能完全替代人工，VIC并没有穷尽世上全部的PG，还有很多细节可以慢慢改进。</p>
+<p>例如VIC使用的人群数据库中仅包含了SNP和insert这些突变，并没有包含MNP，因此在流程中加入 gnomad 的 MNP 数据库进行过滤不失为一个很好的选择</p>
+<p>下载地址：</p>
+<p> <a href="https://gnomad.broadinstitute.org/downloads" target="_blank" rel="noopener">https://gnomad.broadinstitute.org/downloads</a></p>
+<p>对于临床来说，突变分类固然重要，但并不是三级分析当中最为关键的一环，如何全面的注释出用药信息，以个人的观念，才是肿瘤临床分析中最为重要的步骤，我在另外一篇博客中详细描述了三级分析的过程，详情请见：</p>
+<p>VIC原文：<a href="https://www.ncbi.nlm.nih.gov/pubmed/31443733" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/pubmed/31443733</a></p>
+]]></content>
+      <categories>
+        <category>Bioinformatics</category>
+        <category>Cancer</category>
+      </categories>
+      <tags>
+        <tag>Variant Classification</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从AUC到DCA</title>
+    <url>/2021/04/25/DCA/</url>
+    <content><![CDATA[<p>DCA全名 Decision Curve Analysis，即决策曲线分析法，在 2006 年由 MSKCC 的 Vickers 和 Elkin 首次提出 <sup>1, 2, 3</sup>，用于评估临床中的诊断模型、预后模型等。相较于在二战时期被发明的ROC曲线，DCA还非常年轻，但已在临床模型评估中展现出其独有的优势。因为此分析法并不重点关注于灵敏度及特异性，而是从患者的净收益情况、及其自身意愿的角度来评估模型的优劣。</p>
+<p>在本文中，我将从二元分类问题入手，系统介绍ROC曲线以及DCA曲线</p>
+<h1 id="二元分类问题"><a href="#二元分类问题" class="headerlink" title="二元分类问题"></a>二元分类问题</h1><p>无论是ROC曲线还是DCA曲线，都是用于评估二元分类 (binary classification) 模型的一种分析方法。所谓二元分类问题，就是结局仅有两种情况的问题，在临床之中尤为常见。例如，诊断一位患者是否得了某种疾病（结局仅可能为：“有” 或者 “没有”）。</p>
+<p>对于评估一个模型是否能准确的进行分类来说，常见有如下几个指标：</p>
+<ol>
+<li><p>灵敏度  TPR</p>
+<p>又被称为召回率，英文：Sensitivity、Recall Rate、True Positive Rate</p>
+<p>即 实际为阳性中检出阳性 的占比。</p>
+<p>假设我们在评估一种癌症的检测方法，则该指标评估的是 该检测方法对患者的检出能力水平。</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>特异性 TNR</p>
+<p>英文 Specificity、True Negative Rate </p>
+<p>即 实际为阴性中检出阴性 的占比。</p>
+<p>同样假设我们在评估一种癌症的检测方法，则该指标评估的是 该检测方法对健康人群的排除能力水平。</p>
+</li>
+</ol>
+<ol start="3">
+<li><p>精确度 PPV</p>
+<p>又称为阳性预测值，英文 Precision、Positive Predictive Value</p>
+<p>所指为在 所有检出为阳性之中真正为阳性 的占比</p>
+<p>同样假设下，该指标评估的是 所有检测为阳性的人群中，真正患癌的人数占比</p>
+<p>此值低，则意味着假阳性的人数多，则会对健康受试者造成不必要的恐慌，以及浪费之后的检测、治疗。</p>
+</li>
+</ol>
+<ol start="4">
+<li><p>阴性预测值 NPV</p>
+<p>英文 Negative Predictive Value</p>
+<p>所指为在 所有检测为阴性之中真正为阴性 的占比</p>
+<p>同样假设下，该指标评估的是 所有检测为阴性的人群中，真正健康人的人数占比</p>
+<p>此值低，则意味着假阴性的人数多，这些被误诊为健康的癌症患者则会被耽误治疗、甚至错过最佳治疗时机。</p>
+</li>
+</ol>
+<ol start="5">
+<li><p>F1 score</p>
+<p>不知道中文名叫啥，又称为 F score 或 F measure</p>
+<p>其定义为 灵敏度 和 精确度 的调和平均数，公式如下：</p>
+<p>F1-score = 2 / ( (1/ TPR ) + (1 / PPV) )</p>
+<p>该值在 0 ~ 1 范围内浮动，1 则表示该值具有完美的灵敏度和精确度；0 则意味着 灵敏度 或 精确度 中一值为 0</p>
+</li>
+</ol>
+<p>上述五类指标在临床中最为常见，建议熟读并背诵 :) </p>
+<p>详情见下图：</p>
+<p><img src="https://raw.githubusercontent.com/ZKai0801/bioitland.io/master/imgs/dca_bc.png" alt="binary_classification"></p>
+<h1 id="ROC曲线"><a href="#ROC曲线" class="headerlink" title="ROC曲线"></a>ROC曲线</h1><p>ROC 全名 Receiver operating characteristics，之所以有这么个古怪的名字，是因为它是在二战时期被发明，一开始是用作评估雷达的信号接受能力。</p>
+<p>这一分析方法非常简单，是通过对模型设置不同的阈值来计算出其对应的 TPR 以及 FPR。通过上图可知，TPR 便是灵敏度（即收益）；FPR 便是 1 - 特异性（即代价）。如此一来，每一个模型便都能计算出其对应的一条 ROC 曲线。如下图，曲线越接近图中的左上角，则意味着模型越准确；反之，如果曲线越接近图中的对角线，则意味着模型对结果的预测越随机。</p>
+<p>如何更为直观的表达模型的好坏呢？答案便是使用 曲线下面积 – AUC面积（Area Under Curve）。AUC 这一数值取值在 0.5 - 1 之间。0.5 所对应的便是ROC曲线与对角线重叠的情况，表明模型对结果的预测完全随机；AUC = 1，则是面积最大，意味着模型能完全精准的预测出结果的情况。</p>
+<p><img src="https://glassboxmedicine.files.wordpress.com/2019/02/roc-curve-v2.png" alt="roc_curve"></p>
+<p>对于如何应用，这里不详细展开，网上有很多写的不错的博客可以参考，例如：<a href="https://rviews.rstudio.com/2019/03/01/some-r-packages-for-roc-curves/" target="_blank" rel="noopener">https://rviews.rstudio.com/2019/03/01/some-r-packages-for-roc-curves/</a></p>
+<p>唯一一点需要提一下，就是在生信类的文献中，最常见的模型是预后模型，ROC实际上并不适合评估此类模型。毕竟对于预后来说，因变量实际上是连续变量。因此如果想要用ROC来进行评估，必须先将其因变量转变为二元类变量。这便是我们经常看到的 三年生存、五年生存 等等，指的是模型用于判断，患者在三年后（确切的来说是指 刚过完三年的这个当下）是否生存的状态。这一方法被称为 time-dependent ROC curve analysis<sup>4</sup>，推荐使用 R 包 timeROC 完成</p>
+<h1 id="DCA-曲线"><a href="#DCA-曲线" class="headerlink" title="DCA 曲线"></a>DCA 曲线</h1><p>上述传统的统计学评估方法（灵敏度、特异性、AUC等等），在临床应用中并不能很好的提供一个答案。比如，到底灵敏度多高的时候才应该使用这个模型，或者，在两个模型之中，到底应该使用哪一个。需要注意的是，与纯理论的统计学评估不同，临床中，模型的好坏并不能简单的通过AUC面积的大小进行判断。比如说，我们在评估两个早筛模型的优劣，模型A相比模型B拥有稍高一点的AUC面积，但早筛这个场景，更希望得到高水平的特异性，也就是尽量将健康人排除。在比较同样高水平的特异性下，模型B若是拥有更高的灵敏度，实际上选择模型B才是更优解。类似于这种问题，便可通过DCA分析进行解决。</p>
+<p>自2006年 DCA分析首次提出之后，短短几年内，被引数已上千。并被多篇顶级医学杂志，如 JAMA、JCO 所推荐。然而真正了解其原因、懂得如何去解读它的人并不多（作者在后续文章中自己说的，不是我瞎写的）。</p>
+<h2 id="DCA-曲线的意义解读及其原理"><a href="#DCA-曲线的意义解读及其原理" class="headerlink" title="DCA 曲线的意义解读及其原理"></a>DCA 曲线的意义解读及其原理</h2><p>简而言之，DCA曲线所展示的是 预测模型的 “净收益”，以及其相较于 “干预所有患者” 和 “对所有患者均不干预” 这两种情况 在不同的 Threshold probability 下的表现。Threshold probability，本质上取决于患者与医生对于 “干预手段” 的意愿。</p>
+<p>举个栗子，在列腺癌筛查的研究中，若患者被查出其前列腺特异性抗原（prostate-specific anigen PSA）出现升高，则患者往往会被要求去做活体检测以确认是否真实患有恶性前列腺癌。然而实际中，PSA升高的患者中，仅有很小一部分为恶性肿瘤。那么对于那些为患病的健康人来说，他们去做活检，便是过度治疗，并承担不必要的伤害。在这一例子中，“活检” 便是 “干预手段”。</p>
+<p>常规的DCA曲线往往由三条线构成：1）全部患者都进行干预；2）全部患者都不加以干预；3）根据预测模型结果来判断是否进行干预。在这三条线中，每一条均是一种<strong>策略</strong>。 </p>
+<p>下图所展示的便是上述案例，Intervention for all / Intervention for none 分别表示对所有患者均进行活检，以及对所有患者均不进行活检。Test 这一条虚线，指的是 PSA筛查 这一手段。这一筛查方法具有固定的灵敏度及特异性，故成直线，而非曲线。假设现在我们研发了一款全新的预测方法，可以更好的预测患者是否患有恶性肿瘤。那么这一预测方法，便是图中所画的 “Model”。从图中可以看的是，Model 这一曲线，在绝大情况下均有最高的收益值，也就是说按此模型结果来决定是否进行活检收益最高。除非患者、医生特别希望进行活检 – 意愿（Preference）非常低 – 只有此时 “全干预” 的策略收益高于模型。</p>
+<p><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1186%2Fs41512-019-0064-7/MediaObjects/41512_2019_64_Fig1_HTML.png?as=webp" alt="dca"></p>
+<p>理解了Benefit，接下来我们聊聊 Preference。即使在同样的病例面前，不同的患者、不同的医生，最后做出的决定可能都不一样。比如对于一个处于壮年的患者来说，尽可能的确诊才是他的诉求，如果能在可治愈时期发现癌症、并治愈癌症，那么他的收益才是最大的；但是对于一位体弱多病的老人来说，尽量避免活检、维持现在的生活才是他的诉求，因为活检会对患者产生一定的伤害，甚至导致感染。价格因素，是另一个重要的考量。 如果太贵，那么便需尽可能少做活检以减少对患者产生太大的经济负担。</p>
+<p>具体到x轴的实际内容上，是由 Threshold probability 这一值来反映 Preference 的情况。所谓 Threshold probability，指的是模型预测的患癌可能性。假设医生选择 10% 作为模型的阈值，则若患者使用该模型检测出 10% + 的值，则医生就会对其进行活检；反之则不会。以 10% 为阈值，还意味着医生认为 漏掉一个恶性肿瘤，比做一个不必要的活检要糟糕 9 倍。这个比例（1：9），便是作者所提出的 “exchange rate” 交换率。</p>
+<p>Net benefit 净收益的定义为：</p>
+<p>​    Net Benefit = Benefit - harm * exchange rate</p>
+<p>在刚刚那个示例中，如果该模型在一个100人的队列中进行验证，这个队列中所有人均检测出了PSA水平升高，且无其他明显表型。其中，有 25 个是真正的癌症患者，剩余75个为健康人。那么对于 10% 的exchange rate 来说：</p>
+<p>​    Net Benefit = 25% - 75% * (1 / 9) = 16.7%</p>
+<p><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1186%2Fs41512-019-0064-7/MediaObjects/41512_2019_64_Fig2_HTML.png?as=webp" alt="dca_preference"></p>
+<p>如此一来，便可以在一个合理的 Threshold Probability (也就是 exchange rate) 区间内计算出所有的 Net Benefit，并画出整个DCA曲线。</p>
+<p>当然，DCA这种评估方式也带来了明显的问题，因为 threshold probability 的纯主观的，各个医生会有不同的评估。假设一个医生完全没有主观意见的话，那么DCA曲线变对他<strong>毫无帮助</strong>。只有在考虑到了临床中各种因素之后，才能将其转换为较为具体的 threshold probability，并根据此来选择模型、策略。</p>
+<h2 id="DCA的实现方式"><a href="#DCA的实现方式" class="headerlink" title="DCA的实现方式"></a>DCA的实现方式</h2><p>在理解了DCA的原理之后，可以发现实现起来并不复杂。但我们并不需要从头计算，很多R包都可以实现这DCA曲线，这里推荐使用Y叔叔的R包 – <code>ggDCA</code> <sup>5</sup>。Y叔自己写了个详细的文章，这里就不再冗述了：<a href="https://mp.weixin.qq.com/s/dcN1BvmuSO7osWFPPq3pYg" target="_blank" rel="noopener">首发！决策曲线分析R包：ggDCA</a></p>
+<hr>
+<p>参考文献：</p>
+<ol>
+<li>Vickers AJ, Elkin EB. Decision curve analysis: a novel method for evaluating prediction models. Med Decis Making. 2006;26(6):565–74</li>
+<li>Vickers AJ, Van Calster B, Steyerberg EW. Net benefit approaches to the evaluation of prediction models, molecular markers, and diagnostic tests. BMJ. 2016;352:i6</li>
+<li>Vickers AJ, van Calster B, Steyerberg EW. A simple, step-by-step guide to interpreting decision curve analysis. Diagn Progn Res. 2019 Oct 4;3:18. doi: 10.1186/s41512-019-0064-7. PMID: 31592444; PMCID: PMC6777022.</li>
+<li>Kamarudin AN, Cox T, Kolamunnage-Dona R. Time-dependent ROC curve analysis in medical research: current methods and applications. BMC Med Res Methodol. 2017 Apr 7;17(1):53. doi: 10.1186/s12874-017-0332-6. PMID: 28388943; PMCID: PMC5384160.</li>
+<li><a href="https://cran.r-project.org/web/packages/ggDCA/index.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/ggDCA/index.html</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Statistics</category>
+      </categories>
+      <tags>
+        <tag>DCA</tag>
+        <tag>ROC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Multi-nucleotide variants</title>
+    <url>/2020/04/28/Multi-nucleotide-variants/</url>
+    <content><![CDATA[<p>之前写过一篇关于MNV的文章，但感觉写的逻辑混乱，故推翻重写一篇</p>
+<p>MNV (multi-nucleotide variants) 即多个碱基发生变化的突变，是有两个甚至多个 SNVs / InDels 合并而成，至于为何不将这些 SNVs / InDels 分别对待，则由于它在临床上、生物学上具有特殊的意义，因此特意归为一类突变。</p>
+<p>至今为止，关于MNV并没有一个准确的定义，虽然大家都明确同一单倍型上的突变需要被合并，但无人指出具体<strong>多近</strong>的突变应该被合并。</p>
+<a id="more"></a>
+
+<h1 id="MNV-Phasing-与-Haplotype-的概念"><a href="#MNV-Phasing-与-Haplotype-的概念" class="headerlink" title="MNV, Phasing 与 Haplotype 的概念"></a>MNV, Phasing 与 Haplotype 的概念</h1><p>MNV 与 Haplotype (单倍型) 和 phasing problem 密切相关，我们先来直观的感受一下什么是 MNV:</p>
+<p>Fig 1a. 中显示了两个相邻突变在BAM中的reads真实分布，可见，MNV中的两个突变均发生于相同的reads之上，这种情况我们称之为顺势 (in-cis )，而处于不同reads之上即称为反式 (in trans).  处于顺势的相邻突变即是 MNV</p>
+<p>Fig 1b 则清晰的显示出了这两种情况（MNV 和 非MNV）会导致两种不同的突变类型，它的生物学意义不言而喻</p>
+<p><img src="https://www.biorxiv.org/content/biorxiv/early/2019/03/10/573378.1/F1.large.jpg" alt="mnv_examples"></p>
+<p>在刚刚一图之中，突变和未突变的reads很明显的区分成了两份，这两份的区别，便是单倍型这一概念</p>
+<p>单倍型这一概念，是对现有测序方法在<strong>空间层面</strong>上的一种补充。现有的测序方法，如二代、三代测序，虽然在碱基层面上达到了极高的精密度，但是却丢失了基因组在细胞内的空间分布信息，因为DNA经过打断这一过程，已无法追溯它的起源。而单倍型的概念，便是对于这一缺陷的补充，即试图分辨出，基因序列究竟来源于哪里。对于人类胚系细胞来说，当然这个来源只有两种可能：父系、母系；而在肿瘤的研究当中，由于<strong>肿瘤异质性</strong>以及 <strong>非整倍体</strong> 的存在，并非所有细胞的基因组都完全一致，因此不同单倍型可能来自于不同的亚克隆之中。</p>
+<p>而如何判断碱基序列来源于同一个单倍型，这一过程就被称之为 phasing，因此可以说，phasing问题是整个单倍型的发现、MNV的判断的基础，我将会新写一篇博文来专门整理 phasing 目前的主流方法</p>
+<h1 id="MNV-的“分类”"><a href="#MNV-的“分类”" class="headerlink" title="MNV 的“分类”"></a>MNV 的“分类”</h1><p>很多研究中，都会根据 MNV 的影响、产生的方式对 MNV 进行一个分类</p>
+<p>根据 MNV 导致的氨基酸的改变，会将 missense MNVs 分为:</p>
+<ul>
+<li><p>one-step missense MNVs</p>
+<p>即一个碱基发生改变就能变成的某种氨基酸</p>
+</li>
+<li><p>two-step missense MNVs</p>
+<p>需要两个碱基改变才能变成的某种氨基酸</p>
+</li>
+<li><p>*exclusive missense SNV</p>
+<p>罕见，为只能由一个碱基改变才能变成的某种氨基酸</p>
+</li>
+</ul>
+<p>根据 MNV 的产生方式，MNV 又可被分为：</p>
+<ul>
+<li><p>sim-MNV (simultaneous)</p>
+<p>由单一突变过程导致的MNV。这种 MNV 的各单一突变往往具有完全相同的突变频率</p>
+</li>
+<li><p>con-MNV (consecutive)</p>
+<p>由两种或以上突变过程导致的MNV，并非同一时间产生，而是之后 phasing 的时候被合并到一起</p>
+</li>
+</ul>
+<p><img src="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6633265/bin/1047f01.jpg" alt="mnv_sim_con"></p>
+<h1 id="MNV的发生机理"><a href="#MNV的发生机理" class="headerlink" title="MNV的发生机理"></a>MNV的发生机理</h1><h2 id="1-DNA-polymerase-zeta"><a href="#1-DNA-polymerase-zeta" class="headerlink" title="1. DNA polymerase zeta"></a>1. DNA polymerase zeta</h2><p>最早被发现可以导致MNV的便是 DNA polymerase zeta，这是一种 translesion polymerase，与变异特征 GC -&gt; AA 和 GA -&gt; TT 紧密相关</p>
+<blockquote>
+<p>在现实生活中，细胞必然会不断地收到损伤，其中部分损伤会一直维持在DNA之中，并且严重影响细胞的正常复制</p>
+<p>translesion polymerase，或者叫 translesion DNA synthesis (TLS) 便是细胞用来修复这一类损伤的重要武器，以防止危害被进一步扩大。但可想而知，这种快速修复必然是 error-prone ，并且会让未来 mutagenesis 和 carcinogenesis 的可能性进一步加大</p>
+</blockquote>
+<p>在 de novo sim-MNV (1bp) 中，这种特征占到了约20%</p>
+<h2 id="2-APOBEC"><a href="#2-APOBEC" class="headerlink" title="2. APOBEC"></a>2. APOBEC</h2><p>APOBEC 是属于 cytidine deaminase 的一个家族，主要功能是进行 C -&gt; U 的 RNA 编辑，但也会在暴露的单链DNA上造成 clustered mutations。目前在COSMIC中，跟APOBEC 家族相关的突变特征共有三种：SBS13, SBS2 以及 DBS11。</p>
+<p>在胚系突变当中，APOBEC signature 展现出 C..C -&gt; T..T 的突变特征，并且两个突变碱基之间的距离甚远。这一特征在 sim-MNVs 和 con-MNVs (3-20bp) 的所有特征中占比最高</p>
+<h2 id="3-CpG-island"><a href="#3-CpG-island" class="headerlink" title="3. CpG island"></a>3. CpG island</h2><p>CpG island 对 con-MNV 起到了最大的影响。在人类细胞中，CpG 岛中的 5’C 通常会被甲基化，并且突变率比正常序列高10倍。在 con-MNVs (2-30bp) 中，最常见的突变是：C..C -&gt; T..T，这是由两处CpG岛中的 CG..CG -&gt; TG.. TG 导致的。即使在 con-MNVs (1bp) 中，CG -&gt; TG 占比也高达24%</p>
+<h2 id="4-Polymerase-slippage"><a href="#4-Polymerase-slippage" class="headerlink" title="4. Polymerase slippage"></a>4. Polymerase slippage</h2><p>又被称为 slipped strand mispairing (SSM) 或者 replication slippage，是发生在 DNA 复制过程中的一种突变过程。在DNA复制的过程中，DNA polymerase 有时会从 DNA 单链上脱落下来，而新生成的 DNA 单链也会从模板链上脱落，并且再次比对上去。 而如果此时正好发生在重复区域，新生成的 DNA 单链便有可能比对错误（毕竟重复区域内，序列非常相似），DNA polymerase 再次回归开始复制时，便可能导致新生链的延长或者缩短</p>
+<blockquote>
+<p><img src="https://ars.els-cdn.com/content/image/1-s2.0-S1876162310790027-f02-06-9780123812780.jpg" alt=""></p>
+</blockquote>
+<p>Wang et al., 2019 为研究 polymerase slippage 对 MNV 产生的影响，统计了重复区域内的 MNV ，发现重复区域中的 MNV 的频率远高于两个SNV同时发生的频率。并且，30%以上的MNVs 均为 AT -&gt; TA 的突变；50% 的 AA -&gt; TT 和 AA -&gt; CC 的突变都发生在重复区域之中</p>
+<p>但由于目前无法从重复区域中准确的算出 indel 的质量，该研究并没有计算indel在重复区域的表现，该研究也表明了，未来可通过 long-reads sequencing 的数据来解决这一问题</p>
+<h1 id="MNV-的影响"><a href="#MNV-的影响" class="headerlink" title="MNV 的影响"></a>MNV 的影响</h1><h2 id="1-分子层面"><a href="#1-分子层面" class="headerlink" title="1. 分子层面"></a>1. 分子层面</h2><p>Wong 早在1975 年即指出密码子的结果并非随机，单碱基的改变即使导致了氨基酸的改变，改变的氨基酸的生化特性也是相近的。而 MNV 则会能导致同一密码子中多个碱基的改变，由此可见由此改变的氨基酸在生化特性上也会跟原氨基酸相差较远。</p>
+<p>Kaplanis et al., 2019 的研究中，定义了一个基于237种生化特质的<strong>氨基酸距离</strong>，在分析了 MNV 所导致的 missense variants 之后，确定了 two-step missense MNVs 在氨基酸距离上会导致更大差异。（two-step missense MNVs 这里定义为，必须由两个碱基改变才会导致的氨基酸）</p>
+<p>为了证明更大的生化特性差异会造成更严重的影响，该研究研究了 constraint gene 中各类突变的数量。若MNV missense variants 确实有着更严重的影响，那么在 constraint gene 中应会发现更少的 missense MNVs.  研究结果也证明了我们的猜想，在高度保守基因当中 (pLI &gt; 0.9)，无论是密码子间还是密码子内的 missense MNVs 数量都显著小于 missense SNVs 。见下图</p>
+<blockquote>
+<p>pLI – the probability of loss-of-function intolerance score</p>
+<p>Samocha et al., 2014</p>
+</blockquote>
+<p>该研究继而分析了所有 missense MNVs / SNVs 的 CADD值，发现 missense MNVs 的 CADD值显著高于 missense SNVs 。见下图</p>
+<blockquote>
+<p>CADD – combined annotation-dependent depletion score</p>
+<p>是一个用于预测 missense variants 的有害性的指标</p>
+<p>Kircher et al. 2014</p>
+</blockquote>
+<p>分析这些missense MNVs / SNVs 的singleton占比，也得到了同样的结果 。见下图</p>
+<blockquote>
+<p>singleton 为在某一人群中，仅发生一次的突变；</p>
+<p>doubleton 则为发生两次的突变</p>
+<p>singleton的比值，能很好的反映出人群中的  purifying selection 的强度，也就意味着越会造成严重后果的突变，singleton 占比越大</p>
+<p>Lek et al., 2016</p>
+</blockquote>
+<p><img src="https://genome.cshlp.org/content/29/7/1047/F3.large.jpg" alt="missense_mnvs"></p>
+<p>Wang et al., 2019 研究了 MNV 在 gnomAD 2.1 中的影响，如下图：</p>
+<p><img src="https://www.biorxiv.org/content/biorxiv/early/2019/03/10/573378.1/F2.large.jpg?width=800&height=600&carousel=1" alt="mnv_impact"></p>
+<h2 id="2-临床层面"><a href="#2-临床层面" class="headerlink" title="2. 临床层面"></a>2. 临床层面</h2><p>Kaplanis et al., 2019 的研究为研究 MNV 的临床意义，从DDDS (Deciphering Developmental Disorder Study) 研究中的已知致病基因中，找出了10个 de novo MNVs。与预算出的正常 MNV 突变率相比，这些基因中的 MNV 的突变率高了 3.6 倍 （de novo SNV 的频率也同样增高），即使去除了 polymerase zeta (sequence context bias) 的影响后，MNV 的发生率依然较高于正常值</p>
+<p>同年的 Wang et al., 2019 的实验也研究了4275份罕见病的病人样本，虽发现了16 个 gained nonsense mutations 以及 110 个 missense MNVs ( 高 CADD，且在gnomAD 中低频 )，但经过人工审核，并未找到一个确定的 causal MNV </p>
+<hr>
+<p>参考文献：</p>
+<p>Kaplanis J, Akawi N, Gallone G, et al. Exome-wide assessment of the functional impact and pathogenicity of multinucleotide mutations[J]. Genome research, 2019, 29(7): 1047-1056.</p>
+<p>Wang Q, Pierce-Hoffman E, Cummings B B, et al. Landscape of multi-nucleotide variants in 125,748 human exomes and 15,708 genomes[J]. BioRxiv, 2019: 573378.</p>
+<p>Wang Z, Yang J J, Huang J, et al. Lung adenocarcinoma harboring EGFR T790M and in trans C797S responds to combination therapy of first-and third-generation EGFR TKIs and shifts allelic configuration at resistance[J]. Journal of Thoracic Oncology, 2017, 12(11): 1723-1727.</p>
+]]></content>
+      <categories>
+        <category>Bioinformatics</category>
+      </categories>
+      <tags>
+        <tag>Phasing</tag>
+        <tag>MNV</tag>
+        <tag>Haplotype</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>癌症突变解读协会 -- VICC</title>
+    <url>/2020/05/28/vicc/</url>
+    <content><![CDATA[<p>今天要介绍的是Variant Interpretation for Cancer Consortium (VICC) 癌症突变解读协会，这一协会隶属 Global Alliance for Genomic and Health 组织之下，旨在促进肿瘤界中的突变的解读。虽然 AMP/ASCO/CAP 在2017年就发布了这方面的指南，但细读之，就能发现里面留下了很多待解决的问题。而 VICC 项目的发起，就是为了解决这些问题，因此 VICC 的原文非常值得一读，文献地址请见文末</p>
+<a id="more"></a>
+
+<h1 id="胚系与体系突变解读"><a href="#胚系与体系突变解读" class="headerlink" title="胚系与体系突变解读"></a>胚系与体系突变解读</h1><p>实际上，这里说的胚系与体系突变解读，强调的更是是遗传病和癌症领域的突变解读，这是因为遗传病必然由胚系突变引起，而癌症中大数致癌突变都是后天产生的。遗传病方面的最权威突变解读指南是由 ACMG/AMP 于2015年发布，这一套体系可以说非常成熟；相反 AMP/ASCO/CAP 于2017年发表的肿瘤方面的突变解读，可实行性要弱的多。下面来说说这两者之间的两大大不同之处</p>
+<h2 id="1-等级划分标准之差"><a href="#1-等级划分标准之差" class="headerlink" title="1. 等级划分标准之差"></a>1. 等级划分标准之差</h2><p>由于遗传病往往是由单个或者少量突变引起，这使得遗传病产生的原因相对可循，ACMG/AMP 便可以引入“致病性”这一概念来研究这些突变对蛋白功能的影响。然而对于肿瘤来说，基因组已经发生了巨变，我们很难预测某一个突变对于肿瘤的影响，因此 AMP/ASCO/CAP 并没有提供一个系统的步骤去评定一个突变的 ‘oncogenicity’ （致癌性），相反，它建立了一套基于<strong>临床证据</strong>的评断标准，并且，这些标准非常模糊，实践者很难用它去严格的建立自己的规则</p>
+<h2 id="2-突变表达形式之差"><a href="#2-突变表达形式之差" class="headerlink" title="2. 突变表达形式之差"></a>2. 突变表达形式之差</h2><p>对于胚系来说，突变的表达形式非常简单明了，就是单一的，在DNA层面上的表现，可以用基因组位置+突变碱基的方式进行描述，很少有复杂的情况。</p>
+<p>然而在肿瘤之中，突变的表达形式真的是多种多样，最常见的便是用 HGVS 方式进行表述，例如：<code>NP_004295.2:p.F1174L (ALK F1174L)</code> 但这个突变可由<code>NC_000002.11:g.29443695G&gt;T</code> 或者<code>NC_000002.11:g.29443695G&gt;C</code> 造成；或者使用突变类型对突变进行表达，例如： BRCA1 中的 oncogenic mutation。这便对癌症中突变的注释造成了巨大的挑战。</p>
+<h1 id="肿瘤突变分类的挑战"><a href="#肿瘤突变分类的挑战" class="headerlink" title="肿瘤突变分类的挑战"></a>肿瘤突变分类的挑战</h1><p>由于肿瘤突变分类的基础是寻找尽可能多临床证据，这考验的实际上还是数据挖掘能力。</p>
+<p>在胚系突变方面，基本上就是 ClinVar 、HGMD 一统天下的局面，并且数据库之间的表达差异并不大。</p>
+<p>然而对于体系突变来说，尤其是肿瘤方面，数据库就完全是各自为营的状态，它们之间几乎<strong>没有任何共同点</strong>。下图是VICC对六大肿瘤数据库的条目进行比对的情况，可以看到的是，绝大数条目中的引用的文献都是独一的（占83%），能被六个数据库共同引用的仅由一例。</p>
+<p><img src="https://media.springernature.com/full/springer-static/esm/art%3A10.1038%2Fs41588-020-0603-8/MediaObjects/41588_2020_603_Fig6_ESM.jpg?as=webp" alt=""></p>
+<p>这六大数据库分别是：</p>
+<ul>
+<li><a href="https://pmkb.weill.cornell.edu/" target="_blank" rel="noopener">PMKB</a></li>
+<li><a href="https://www.cancergenomeinterpreter.org/" target="_blank" rel="noopener">CGI</a></li>
+<li><a href="https://civicdb.org/home" target="_blank" rel="noopener">CIViC</a></li>
+<li><a href="https://www.oncokb.org/" target="_blank" rel="noopener">OncoKB</a></li>
+<li><a href="https://www.molecularmatch.com/" target="_blank" rel="noopener">MMatch</a></li>
+<li><a href="https://ckb.jax.org/" target="_blank" rel="noopener">Jax-CKB</a></li>
+</ul>
+<p>但若仅仅是如此，我们只需要找到足够多的数据库即可，可实际情况并非如此，在找齐足够多的数据库之后，我们还面临着五大挑战：</p>
+<ol>
+<li>基因名的表述差异</li>
+<li>突变的表述差异</li>
+<li>癌症分型的差异</li>
+<li>药名的差异</li>
+<li>证据等级的划分差异</li>
+</ol>
+<p>其中，第一条和第四条相对容易解决。</p>
+<p>对于1) 来说，虽然 gene symbol 有所区分，但其中的对应关系都是已知的，统一到 HGNC gene symbols 就可以了</p>
+<p>对于4) 来说，VICC 的做法是利用将所有药物在 Mychem.info、 PubChem、 ChEMBL 上进行检索，最后归一</p>
+<p>证据等级的划分，这个虽然各大数据库都有自己的划分方式，但是根本原则相似，因此 VICC 在它们之间确立了一套映射关系，统一划分至 AMP/ASCO/CAP 标准之中，如下表：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Evidence level</th>
+<th align="left">Defining characteristics</th>
+<th align="left">CIViC</th>
+<th align="left">OncoKB</th>
+<th align="left">JAX-CKB</th>
+<th align="left">CGI</th>
+<th align="left">MMatch</th>
+<th align="left">PMKB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Level A (tier I)</td>
+<td align="left">Evidence from professional guidelines or FDA-approved therapies relating to a biomarker and disease.</td>
+<td align="left">Level A</td>
+<td align="left">Level 1/2A /R1</td>
+<td align="left">Guideline/FDA approved</td>
+<td align="left">Clinical practice</td>
+<td align="left">Level 1A</td>
+<td align="left">Tier 1</td>
+</tr>
+<tr>
+<td align="left">Level B (tier I)</td>
+<td align="left">Evidence from clinical trials or other well-powered studies in clinical populations, with expert consensus.</td>
+<td align="left">Level B</td>
+<td align="left">Level 3A</td>
+<td align="left">Phase III</td>
+<td align="left">Clinical trials III–IV</td>
+<td align="left">Level 1B</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">Level C (tier II)</td>
+<td align="left">Evidence for therapeutic predictive markers from case studies, or other biomarkers from several small studies. Also, evidence for biomarker therapeutic predictions for established drugs for different indications.</td>
+<td align="left">Predictive level C</td>
+<td align="left">Level 2B, level 3B</td>
+<td align="left">Clinical study/phase I/phase II</td>
+<td align="left">Clinical trials I–II, case reports</td>
+<td align="left">Level 2C</td>
+<td align="left">Tier 2</td>
+</tr>
+<tr>
+<td align="left">Level D (tier II)</td>
+<td align="left">Preclinical findings or case studies of prognostic or diagnostic biomarkers. Also includes indirect findings.</td>
+<td align="left">Nonpredictive level C/level D/level E</td>
+<td align="left">Level 4</td>
+<td align="left">Phase 0, preclinical</td>
+<td align="left">Preclinical data</td>
+<td align="left">Level 2D</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<p>而最后癌症分型的区别，以及突变描述的区别，是所有差异里面最难以处理的。这里，重点说明一下VICC对于这两者的处理方式</p>
+<h2 id="肿瘤分型的匹配"><a href="#肿瘤分型的匹配" class="headerlink" title="肿瘤分型的匹配"></a>肿瘤分型的匹配</h2><p>先将所有的肿瘤分型在 EBI OLS 上检索一遍，找到其匹对的DOID，这能匹配到98.7%的分型，剩下无法匹配出的分型统一规划到 DOID: 162 (cancer) 这一大类中。</p>
+<p>然后将能找到的分型归一到 TopNode 之中。这里归一的形式有所区分，一是精准匹配，就是匹配得到最接近的那一分型；还有一种是模糊匹配，便是将这一分型的上下级均匹配出来，但不匹配它的姊妹级分型。如下图 b，蓝色字体表示的是匹配出的分型，红色的字体便是无法匹配出的，也就是它的姊妹级</p>
+<p><img src="https://media.springernature.com/full/springer-static/esm/art%3A10.1038%2Fs41588-020-0603-8/MediaObjects/41588_2020_603_Fig8_ESM.jpg?as=webp" alt=""></p>
+<h2 id="突变的匹配"><a href="#突变的匹配" class="headerlink" title="突变的匹配"></a>突变的匹配</h2><p>突变的归一步骤，在VICC中主要分为三步：</p>
+<ol>
+<li><p>将所有突变均转换为基因组位置的描述方式:</p>
+<p>chrom, start, end, ref, alt</p>
+<p>对于已有这些参数的突变来说，这个固然简单。然而由于大多数突变没有一个清晰的基因组位置，因此VICC 首先在 COSMIC 中检索了这些突变的名称，来获取上述参数。对于检索不出的突变，VICC 手动制定了各种规则，来解决这之中的冲突</p>
+</li>
+<li><p>将突变转换至 HGVS 命名</p>
+</li>
+<li><p>将这串 HGVS 命名的突变提交至 ClinGen Allele Registry 以获取唯一的突变编码</p>
+</li>
+</ol>
+<p>对于突变匹配来说，VICC 又建立了四套不同的规则，如上图中 a 所示，分别是：1) exact match 突变需要两者完全的匹配; 2) positional match 基因组位置必须一致，但碱基可以不同; 3) focal match 两者必须在存在10%以上的匹配; 4) regional match 只要突变有交集，就匹配</p>
+<p>之所以建立起如此复杂的匹配模式，是因为数据库中很多突变的描述是基因某一密码子，某一外显子，甚至仅仅是某一基因。因此如果按照一般的匹配方式，即 exact match，那么这一部分突变将永远无法匹配上。</p>
+<hr>
+<p>VICC 这一项研究最大功劳便是整合了各数据库之间的差异，最后还设计了一个交互式网站，可供大家免费使用：<a href="https://search.cancervariants.org/" target="_blank" rel="noopener">https://search.cancervariants.org/</a></p>
+<p>不仅如此，这篇文献文末还提供了研究中所用的所有代码：<a href="http://git.io/vicckb" target="_blank" rel="noopener">http://git.io/vicckb</a> 并且告诉了大家各大数据库的下载方式。</p>
+<p>Variant Interpretation for Cancer Consortium (VICC) </p>
+<hr>
+<p>参考文献：</p>
+<p>Wagner A H, Walsh B, Mayfield G, et al. A harmonized meta-knowledgebase of clinical interpretations of somatic genomic variants in cancer[J]. Nature genetics, 2020, 52(4): 448-457.</p>
+<p>Li M M, Datto M, Duncavage E J, et al. Standards and guidelines for the interpretation and reporting of sequence variants in cancer: a joint consensus recommendation of the Association for Molecular Pathology, American Society of Clinical Oncology, and College of American Pathologists[J]. The Journal of molecular diagnostics, 2017, 19(1): 4-23.</p>
+<p>Richards S, Aziz N, Bale S, et al. Standards and guidelines for the interpretation of sequence variants: a joint consensus recommendation of the American College of Medical Genetics and Genomics and the Association for Molecular Pathology[J]. Genetics in medicine, 2015, 17(5): 405-423.</p>
+]]></content>
+      <categories>
+        <category>Cancer</category>
+        <category>Bioinformatics</category>
+      </categories>
+      <tags>
+        <tag>Variant Classification</tag>
+      </tags>
+  </entry>
+</search>
