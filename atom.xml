@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://bioitland.com/"/>
-  <updated>2021-04-26T03:18:40.472Z</updated>
+  <updated>2021-04-26T03:25:34.585Z</updated>
   <id>http://bioitland.com/</id>
   
   <author>
@@ -21,17 +21,12 @@
     <link href="http://bioitland.com/2021/04/25/DCA/"/>
     <id>http://bioitland.com/2021/04/25/DCA/</id>
     <published>2021-04-24T16:00:00.000Z</published>
-    <updated>2021-04-26T03:18:40.472Z</updated>
+    <updated>2021-04-26T03:25:34.585Z</updated>
     
     <summary type="html">
     
-      
-      
-        
-        
-          &lt;p&gt;DCA全名 Decision Curve Analysis，即决策曲线分析法，在 2006 年由 MSKCC 的 Vickers 和 Elkin 首次提出 &lt;sup&gt;1, 2,
-        
-      
+      &lt;p&gt;DCA全名 Decision Curve Analysis，即决策曲线分析法，在 2006 年由 MSKCC 的 Vickers 和 Elkin 首次提出 &lt;sup&gt;1, 2, 3&lt;/sup&gt;，用于评估临床中的诊断模型、预后模型等。相较于在二战时期被发明的ROC曲线，DCA还非常年轻，但已在临床模型评估中展现出其独有的优势。因为此分析法并不重点关注于灵敏度及特异性，而是从患者的净收益情况、及其自身意愿的角度来评估模型的优劣。&lt;/p&gt;
+&lt;p&gt;在本文中，我将从二元分类问题入手，系统介绍ROC曲线以及DCA曲线&lt;/p&gt;
     
     </summary>
     
